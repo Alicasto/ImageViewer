@@ -144,7 +144,7 @@ void ViewerWidget::clear()
 
 void ViewerWidget::drawLineDDA(QPoint start, QPoint end, QColor color)
 {
-	/*int x1 = start.x();
+	int x1 = start.x();
 	int x2 = end.x();
 	
 	int y1 = start.y();
@@ -165,7 +165,7 @@ void ViewerWidget::drawLineDDA(QPoint start, QPoint end, QColor color)
 		setPixel(round(x), round(y), color);
 		x += xn;
 		y += yn;
-	}*/
+	}
 }
 
 void ViewerWidget::drawLineBresenham(QPoint start, QPoint end, QColor color)
