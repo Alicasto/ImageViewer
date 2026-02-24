@@ -129,10 +129,10 @@ void ViewerWidget::drawLine(QPoint start, QPoint end, QColor color, int algType)
 	update();
 
 	//Po implementovani drawLineDDA a drawLineBresenham treba vymazat
-	QPainter painter(img);
+	/*QPainter painter(img);
 	painter.setPen(QPen(color));
 	painter.drawLine(start, end);
-	update();
+	update();*/
 }
 
 void ViewerWidget::clear()
@@ -155,13 +155,13 @@ void ViewerWidget::drawLineDDA(QPoint start, QPoint end, QColor color)
 	
 	int steps = max(abs(dx), abs(dy));
 
-	double x = x1;
-	double y = y1;
+	float x = x1;
+	float y = y1;
 
 	double xn = (double)dx / steps;
 	double yn = (double)dy / steps;
 
-	for (int i = 0; i < 0; i++){
+	for (int i = 0; i <= 0; i++){
 		setPixel(round(x), round(y), color);
 		x += xn;
 		y += yn;
@@ -174,9 +174,9 @@ void ViewerWidget::drawLineBresenham(QPoint start, QPoint end, QColor color)
 	int x2 = end.x();
 
 	int y1 = start.y();
-	int y2 = end.y();*/
+	int y2 = end.y();
 
-	
+	int d1 =*/ 
 }
 
 //Slots
