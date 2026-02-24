@@ -1,0 +1,3 @@
+C:/Users/HP/Desktop/ImageViewer_template/build/CMakeFiles/ImageViewer.dir
+C:/Users/HP/Desktop/ImageViewer_template/build/CMakeFiles/ALL_BUILD.dir
+C:/Users/HP/Desktop/ImageViewer_template/build/CMakeFiles/ZERO_CHECK.dir

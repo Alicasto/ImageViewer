@@ -1,0 +1,93 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="18.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="C:\Users\HP\Desktop\ImageViewer_template\build\ImageViewer_autogen\mocs_compilation_Debug.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\HP\Desktop\ImageViewer_template\src\ImageViewer.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\HP\Desktop\ImageViewer_template\src\ViewerWidget.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\HP\Desktop\ImageViewer_template\src\main.cpp">
+      <Filter>src</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\HP\Desktop\ImageViewer_template\build\ImageViewer_autogen\UVLADIE3JM\qrc_ImageViewer_Debug.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\HP\Desktop\ImageViewer_template\build\ImageViewer_autogen\mocs_compilation_Release.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\HP\Desktop\ImageViewer_template\build\ImageViewer_autogen\UVLADIE3JM\qrc_ImageViewer_Release.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\HP\Desktop\ImageViewer_template\build\ImageViewer_autogen\mocs_compilation_MinSizeRel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\HP\Desktop\ImageViewer_template\build\ImageViewer_autogen\UVLADIE3JM\qrc_ImageViewer_MinSizeRel.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\HP\Desktop\ImageViewer_template\build\ImageViewer_autogen\mocs_compilation_RelWithDebInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="C:\Users\HP\Desktop\ImageViewer_template\build\ImageViewer_autogen\UVLADIE3JM\qrc_ImageViewer_RelWithDebInfo.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="C:\Users\HP\Desktop\ImageViewer_template\src\ImageViewer.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\HP\Desktop\ImageViewer_template\src\ViewerWidget.h">
+      <Filter>src</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\HP\Desktop\ImageViewer_template\build\ImageViewer_autogen\include_Debug\src\ui_ImageViewer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\HP\Desktop\ImageViewer_template\build\ImageViewer_autogen\include_Release\src\ui_ImageViewer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\HP\Desktop\ImageViewer_template\build\ImageViewer_autogen\include_MinSizeRel\src\ui_ImageViewer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="C:\Users\HP\Desktop\ImageViewer_template\build\ImageViewer_autogen\include_RelWithDebInfo\src\ui_ImageViewer.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="C:\Users\HP\Desktop\ImageViewer_template\build\CMakeFiles\f74230e6af12d1fdc68117b7dc544b00\autouic_(CONFIG).stamp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\HP\Desktop\ImageViewer_template\build\CMakeFiles\ce271e9a028c90cee4362e3dbf23efdf\qrc_ImageViewer_(CONFIG).cpp.rule">
+      <Filter>CMake Rules</Filter>
+    </CustomBuild>
+    <CustomBuild Include="C:\Users\HP\Desktop\ImageViewer_template\CMakeLists.txt" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="C:\Users\HP\Desktop\ImageViewer_template\src\ImageViewer.ui">
+      <Filter>src</Filter>
+    </None>
+    <None Include="C:\Users\HP\Desktop\ImageViewer_template\src\ImageViewer.qrc">
+      <Filter>src</Filter>
+    </None>
+    <None Include="C:\Users\HP\Desktop\ImageViewer_template\build\ImageViewer_autogen\autouic_Debug.stamp" />
+    <None Include="C:\Users\HP\Desktop\ImageViewer_template\build\ImageViewer_autogen\autouic_Release.stamp" />
+    <None Include="C:\Users\HP\Desktop\ImageViewer_template\build\ImageViewer_autogen\autouic_MinSizeRel.stamp" />
+    <None Include="C:\Users\HP\Desktop\ImageViewer_template\build\ImageViewer_autogen\autouic_RelWithDebInfo.stamp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="CMake Rules">
+      <UniqueIdentifier>{CE0C9863-A0AE-3573-8C60-96B290618663}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{090005F1-2A23-3F42-BB9C-48292EF7C7DF}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{FA9236AB-93BE-3AAF-8037-9D76F937B2C6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="src">
+      <UniqueIdentifier>{A82FF169-42BF-3A12-9298-CFD032642704}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+</Project>
