@@ -161,7 +161,7 @@ void ViewerWidget::drawLineDDA(QPoint start, QPoint end, QColor color)
 	double xn = (double)dx / steps;
 	double yn = (double)dy / steps;
 
-	for (int i = 0; i <= 0; i++){
+	for (int i = 0; i <= steps; i++){
 		setPixel(round(x), round(y), color);
 		x += xn;
 		y += yn;
@@ -170,13 +170,46 @@ void ViewerWidget::drawLineDDA(QPoint start, QPoint end, QColor color)
 
 void ViewerWidget::drawLineBresenham(QPoint start, QPoint end, QColor color)
 {
-	/*int x1 = start.x();
+	int x1 = start.x();
 	int x2 = end.x();
 
 	int y1 = start.y();
 	int y2 = end.y();
 
-	int d1 =*/ 
+	int dy = abs(y2 - y1);
+	int dx = abs(x2 - x1);
+
+	int sx = (x1 < x2) ? 1 : -1;
+	int sy = (y1 < y2) ? 1 : -1;
+
+	bool isSwap = false;
+	if (dy > dx) {
+		swap(dx, dy);
+		isSwap = true;
+	}
+
+	int k1 = 2 * dy;
+	int p = 2 * (dy - dx);
+	int k2 = 2 * dy - 2 * dx;
+
+	int x = x1;
+	int y = y1;
+
+	for (int i = 0; i <= dx; i++) {
+		setPixel(x, y, color);
+
+		if (p > 0) {
+			if (isSwap) x += sx;
+			else y += sy;
+			p += k2;
+		}
+		else {
+			p += k1;
+		}
+		if(isSwap) y += sy;
+		else x += sx;
+	}
+	update();
 }
 
 //Slots
