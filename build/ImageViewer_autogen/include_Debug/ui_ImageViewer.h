@@ -56,9 +56,9 @@ public:
     QPushButton *pushButtonSetColor;
     QGroupBox *groupBox_2;
     QGridLayout *gridLayout;
-    QToolButton *toolButtonDrawLine;
     QSpacerItem *horizontalSpacer;
     QComboBox *comboBoxLineAlg;
+    QToolButton *toolButtonDrawLine;
     QSpacerItem *verticalSpacer;
 
     void setupUi(QMainWindow *ImageViewerClass)
@@ -87,7 +87,7 @@ public:
         scrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName("scrollAreaWidgetContents");
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 679, 571));
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 663, 566));
         scrollArea->setWidget(scrollAreaWidgetContents);
 
         horizontalLayout->addWidget(scrollArea);
@@ -95,7 +95,7 @@ public:
         ImageViewerClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(ImageViewerClass);
         menuBar->setObjectName("menuBar");
-        menuBar->setGeometry(QRect(0, 0, 818, 22));
+        menuBar->setGeometry(QRect(0, 0, 818, 21));
         menuFile = new QMenu(menuBar);
         menuFile->setObjectName("menuFile");
         menuImage = new QMenu(menuBar);
@@ -135,12 +135,6 @@ public:
         gridLayout->setSpacing(6);
         gridLayout->setContentsMargins(11, 11, 11, 11);
         gridLayout->setObjectName("gridLayout");
-        toolButtonDrawLine = new QToolButton(groupBox_2);
-        toolButtonDrawLine->setObjectName("toolButtonDrawLine");
-        toolButtonDrawLine->setCheckable(true);
-
-        gridLayout->addWidget(toolButtonDrawLine, 1, 0, 1, 1);
-
         horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum);
 
         gridLayout->addItem(horizontalSpacer, 1, 1, 1, 1);
@@ -148,9 +142,16 @@ public:
         comboBoxLineAlg = new QComboBox(groupBox_2);
         comboBoxLineAlg->addItem(QString());
         comboBoxLineAlg->addItem(QString());
+        comboBoxLineAlg->addItem(QString());
         comboBoxLineAlg->setObjectName("comboBoxLineAlg");
 
         gridLayout->addWidget(comboBoxLineAlg, 0, 0, 1, 2);
+
+        toolButtonDrawLine = new QToolButton(groupBox_2);
+        toolButtonDrawLine->setObjectName("toolButtonDrawLine");
+        toolButtonDrawLine->setCheckable(true);
+
+        gridLayout->addWidget(toolButtonDrawLine, 1, 0, 1, 1);
 
 
         verticalLayout->addWidget(groupBox_2);
@@ -198,10 +199,11 @@ public:
         groupBox->setTitle(QCoreApplication::translate("ImageViewerClass", "Color", nullptr));
         pushButtonSetColor->setText(QString());
         groupBox_2->setTitle(QCoreApplication::translate("ImageViewerClass", "Draw", nullptr));
-        toolButtonDrawLine->setText(QCoreApplication::translate("ImageViewerClass", "Line", nullptr));
         comboBoxLineAlg->setItemText(0, QCoreApplication::translate("ImageViewerClass", "DDA", nullptr));
         comboBoxLineAlg->setItemText(1, QCoreApplication::translate("ImageViewerClass", "Bresenham", nullptr));
+        comboBoxLineAlg->setItemText(2, QCoreApplication::translate("ImageViewerClass", "Circle", nullptr));
 
+        toolButtonDrawLine->setText(QCoreApplication::translate("ImageViewerClass", "Line", nullptr));
     } // retranslateUi
 
 };
