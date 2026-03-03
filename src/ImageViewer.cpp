@@ -4,6 +4,7 @@ ImageViewer::ImageViewer(QWidget* parent)
 	: QMainWindow(parent), ui(new Ui::ImageViewerClass)
 {
 	ui->setupUi(this);
+	ui->comboBoxLineAlg->addItem("Circle");
 	vW = new ViewerWidget(QSize(500, 500), ui->scrollArea);
 	ui->scrollArea->setWidget(vW);
 
@@ -65,7 +66,12 @@ void ImageViewer::ViewerWidgetMouseButtonPress(ViewerWidget* w, QEvent* event)
 	if (e->button() == Qt::LeftButton && ui->toolButtonDrawLine->isChecked()) //рисуется только если кнопка зажата в уи
 	{
 		if (w->getDrawLineActivated()) {
-			w->drawLine(w->getDrawLineBegin(), e->pos(), globalColor, ui->comboBoxLineAlg->currentIndex());
+			QPoint start = w->getDrawLineBegin();
+			QPoint end = e->pos();
+			float radius = sqrt(pow(end.x() - start.x(), 2) + pow(end.y() - start.y(), 2));//радиус линии зависит от длины отрезка, 100 - это просто коэффициент для удобного отображения
+			
+			w->drawLine(start, end, globalColor, radius, ui->comboBoxLineAlg->currentIndex());
+			//w->drawLine(w->getDrawLineBegin(), e->pos(), globalColor, ui->comboBoxLineAlg->currentIndex());
 			w->setDrawLineActivated(false);
 		}
 		else {

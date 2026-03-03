@@ -116,15 +116,18 @@ bool ViewerWidget::isInside(int x, int y)
 }
 
 //Draw functions
-void ViewerWidget::drawLine(QPoint start, QPoint end, QColor color, int algType)
+void ViewerWidget::drawLine(QPoint start, QPoint end, QColor color, float radius, int algType)
 {
 	if (!img || !data) return;
 
 	if (algType == 0) {
 		drawLineDDA(start, end, color);
 	}
-	else {
+	else if(algType == 1){
 		drawLineBresenham(start, end, color);
+	}
+	else if (algType == 2){
+		drawCircle(start, radius, color);
 	}
 	update();
 
@@ -168,7 +171,7 @@ void ViewerWidget::drawLineDDA(QPoint start, QPoint end, QColor color)
 	}
 }
 
-void ViewerWidget::drawLineBresenham(QPoint start, QPoint end, QColor color)
+void ViewerWidget::drawLineBresenham(QPoint start, QPoint end, QColor color) 
 {
 	int x1 = start.x();
 	int x2 = end.x();
@@ -208,6 +211,41 @@ void ViewerWidget::drawLineBresenham(QPoint start, QPoint end, QColor color)
 		}
 		if(isSwap) y += sy;
 		else x += sx;
+	}
+	update();
+}
+
+void ViewerWidget::drawCircle(QPoint center, float radius, QColor color) 
+{
+	int x0 = center.x();
+	int y0 = center.y();
+
+	float p1 = 1 - radius;
+	
+	int x = 0;
+	int y = radius;
+
+	int dvaX = 3;
+	float dvaY = 2 * radius - 2;
+
+	while (x <= y) {
+		setPixel(x0 + x, y0 + y, color);
+		setPixel(x0 + x, y0 - y, color);
+		setPixel(x0 - x, y0 + y, color);
+		setPixel(x0 - x, y0 - y, color);
+		setPixel(x0 + y, y0 + x, color);
+		setPixel(x0 + y, y0 - x, color);
+		setPixel(x0 - y, y0 + x, color);
+		setPixel(x0 - y, y0 - x, color);
+		
+		if (p1 > 0) {
+			p1 = p1 - dvaY;
+			y--;
+			dvaY -= 2;
+		}
+		p1 = p1 + dvaX;
+		dvaX += 2;
+		x++;
 	}
 	update();
 }
