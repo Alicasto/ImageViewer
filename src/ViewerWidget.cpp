@@ -142,7 +142,13 @@ void ViewerWidget::clear()
 {
 	if (!img) return;
 	img->fill(Qt::white);
+	clearPolygon();
 	update();
+}
+
+void ViewerWidget::clearPolygon()
+{
+	polygonPoints.clear();
 }
 
 void ViewerWidget::drawLineDDA(QPoint start, QPoint end, QColor color)
@@ -249,6 +255,17 @@ void ViewerWidget::drawCircle(QPoint center, float radius, QColor color)
 	}
 	update();
 }
+
+void ViewerWidget::addPolygonPoints(QPoint p)
+{
+	polygonPoints.push_back(p);
+}
+
+QVector <QPoint>& ViewerWidget::getPolygonPoints()
+{
+	return polygonPoints;
+}
+
 
 //Slots
 void ViewerWidget::paintEvent(QPaintEvent* event)

@@ -18,6 +18,7 @@ C:/Users/HP/Desktop/ImageViewer_template/src/ImageViewer.h
  mdp:C:/Qt/6.10.2/msvc2022_64/include/QtCore/QString
  mdp:C:/Qt/6.10.2/msvc2022_64/include/QtCore/QStringList
  mdp:C:/Qt/6.10.2/msvc2022_64/include/QtCore/QVariant
+ mdp:C:/Qt/6.10.2/msvc2022_64/include/QtCore/QVector
  mdp:C:/Qt/6.10.2/msvc2022_64/include/QtCore/QtCore
  mdp:C:/Qt/6.10.2/msvc2022_64/include/QtCore/QtCoreDepends
  mdp:C:/Qt/6.10.2/msvc2022_64/include/QtCore/q17memory.h
@@ -578,6 +579,7 @@ C:/Users/HP/Desktop/ImageViewer_template/src/ViewerWidget.h
  mdp:C:/Qt/6.10.2/msvc2022_64/include/QtCore/QString
  mdp:C:/Qt/6.10.2/msvc2022_64/include/QtCore/QStringList
  mdp:C:/Qt/6.10.2/msvc2022_64/include/QtCore/QVariant
+ mdp:C:/Qt/6.10.2/msvc2022_64/include/QtCore/QVector
  mdp:C:/Qt/6.10.2/msvc2022_64/include/QtCore/QtCore
  mdp:C:/Qt/6.10.2/msvc2022_64/include/QtCore/QtCoreDepends
  mdp:C:/Qt/6.10.2/msvc2022_64/include/QtCore/q17memory.h

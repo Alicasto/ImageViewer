@@ -16,6 +16,7 @@ C:/Users/HP/Desktop/ImageViewer_template/build/ImageViewer_autogen/include_Debug
   C:/Qt/6.10.2/msvc2022_64/include/QtCore/QString \
   C:/Qt/6.10.2/msvc2022_64/include/QtCore/QStringList \
   C:/Qt/6.10.2/msvc2022_64/include/QtCore/QVariant \
+  C:/Qt/6.10.2/msvc2022_64/include/QtCore/QVector \
   C:/Qt/6.10.2/msvc2022_64/include/QtCore/QtCore \
   C:/Qt/6.10.2/msvc2022_64/include/QtCore/QtCoreDepends \
   C:/Qt/6.10.2/msvc2022_64/include/QtCore/q17memory.h \

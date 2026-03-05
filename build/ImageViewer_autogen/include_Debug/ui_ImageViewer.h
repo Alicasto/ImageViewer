@@ -12,6 +12,7 @@
 #include <QtCore/QVariant>
 #include <QtGui/QAction>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QButtonGroup>
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QDockWidget>
 #include <QtWidgets/QGridLayout>
@@ -56,10 +57,12 @@ public:
     QPushButton *pushButtonSetColor;
     QGroupBox *groupBox_2;
     QGridLayout *gridLayout;
-    QSpacerItem *horizontalSpacer;
     QComboBox *comboBoxLineAlg;
     QToolButton *toolButtonDrawLine;
+    QSpacerItem *horizontalSpacer;
+    QToolButton *toolButtonPolygon;
     QSpacerItem *verticalSpacer;
+    QButtonGroup *buttonGroup;
 
     void setupUi(QMainWindow *ImageViewerClass)
     {
@@ -87,7 +90,7 @@ public:
         scrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName("scrollAreaWidgetContents");
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 663, 566));
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 647, 566));
         scrollArea->setWidget(scrollAreaWidgetContents);
 
         horizontalLayout->addWidget(scrollArea);
@@ -135,10 +138,6 @@ public:
         gridLayout->setSpacing(6);
         gridLayout->setContentsMargins(11, 11, 11, 11);
         gridLayout->setObjectName("gridLayout");
-        horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum);
-
-        gridLayout->addItem(horizontalSpacer, 1, 1, 1, 1);
-
         comboBoxLineAlg = new QComboBox(groupBox_2);
         comboBoxLineAlg->addItem(QString());
         comboBoxLineAlg->addItem(QString());
@@ -148,10 +147,24 @@ public:
         gridLayout->addWidget(comboBoxLineAlg, 0, 0, 1, 2);
 
         toolButtonDrawLine = new QToolButton(groupBox_2);
+        buttonGroup = new QButtonGroup(ImageViewerClass);
+        buttonGroup->setObjectName("buttonGroup");
+        buttonGroup->addButton(toolButtonDrawLine);
         toolButtonDrawLine->setObjectName("toolButtonDrawLine");
         toolButtonDrawLine->setCheckable(true);
 
         gridLayout->addWidget(toolButtonDrawLine, 1, 0, 1, 1);
+
+        horizontalSpacer = new QSpacerItem(40, 20, QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Minimum);
+
+        gridLayout->addItem(horizontalSpacer, 1, 1, 1, 1);
+
+        toolButtonPolygon = new QToolButton(groupBox_2);
+        buttonGroup->addButton(toolButtonPolygon);
+        toolButtonPolygon->setObjectName("toolButtonPolygon");
+        toolButtonPolygon->setCheckable(true);
+
+        gridLayout->addWidget(toolButtonPolygon, 2, 0, 1, 1);
 
 
         verticalLayout->addWidget(groupBox_2);
@@ -204,6 +217,7 @@ public:
         comboBoxLineAlg->setItemText(2, QCoreApplication::translate("ImageViewerClass", "Circle", nullptr));
 
         toolButtonDrawLine->setText(QCoreApplication::translate("ImageViewerClass", "Line", nullptr));
+        toolButtonPolygon->setText(QCoreApplication::translate("ImageViewerClass", "Polygon", nullptr));
     } // retranslateUi
 
 };

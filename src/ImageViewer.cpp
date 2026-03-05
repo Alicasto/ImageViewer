@@ -11,7 +11,6 @@ ImageViewer::ImageViewer(QWidget* parent)
 	ui->scrollArea->setWidgetResizable(false);
 	ui->scrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 	ui->scrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-
 	vW->setObjectName("ViewerWidget");
 	vW->installEventFilter(this);
 
@@ -61,29 +60,69 @@ bool ImageViewer::ViewerWidgetEventFilter(QObject* obj, QEvent* event)
 }
 void ImageViewer::ViewerWidgetMouseButtonPress(ViewerWidget* w, QEvent* event)
 {
+	if (w->hasObject) {
+		return;
+	}
 	QMouseEvent* e = static_cast<QMouseEvent*>(event);
-	if (e->button() == Qt::LeftButton && ui->toolButtonDrawLine->isChecked()) //рисуется только если кнопка зажата в уи
+	int alagType = ui->comboBoxLineAlg->currentIndex();
+	
+	if (ui->toolButtonPolygon->isChecked()) {
+		if (w->getDrawLineActivated()) return;
+		
+		if(e->button() == Qt::LeftButton){
+			w->getPolygonPoints().push_back(e->pos());
+			
+			if (w->getPolygonPoints().size() > 1) {
+				QPoint start = w->getPolygonPoints()[w->getPolygonPoints().size() - 2];
+				QPoint end = w->getPolygonPoints().back();
+				w->drawLine(start, e->pos(), globalColor, 0, alagType);
+			}
+			else {
+				w->setPixel(e->pos().x(), e->pos().y(), globalColor);
+			}
+			w->update();
+		}
+		else if (e->button() == Qt::RightButton){
+			if (w->getPolygonPoints().size() > 2) {
+				w->drawLine(w->getPolygonPoints().back(), w->getPolygonPoints().front(), globalColor, 0, alagType);
+				w->getPolygonPoints().clear();
+				w->update();
+
+				w->hasObject = true;
+			}
+		
+		}
+		
+	}
+	else if (e->button() == Qt::LeftButton && ui->toolButtonDrawLine->isChecked()) //рисуется только если кнопка зажата в уи
 	{
+		if (!w->getPolygonPoints().empty()) return;
+		
 		if (w->getDrawLineActivated()) {
 			QPoint start = w->getDrawLineBegin();
 			QPoint end = e->pos();
-			float radius = sqrt(pow(end.x() - start.x(), 2) + pow(end.y() - start.y(), 2));//радиус линии зависит от длины отрезка, 100 - это просто коэффициент для удобного отображения
+			float radius = sqrt(pow(end.x() - start.x(), 2) + pow(end.y() - start.y(), 2));//радиус линии зависит от длины отрезка
 			
 			w->drawLine(start, end, globalColor, radius, ui->comboBoxLineAlg->currentIndex());
 			//w->drawLine(w->getDrawLineBegin(), e->pos(), globalColor, ui->comboBoxLineAlg->currentIndex());
 			w->setDrawLineActivated(false);
+
+			w->hasObject = true;
 		}
 		else {
 			w->setDrawLineBegin(e->pos());//pos позиция мыши 
 			w->setDrawLineActivated(true);
 			w->setPixel(e->pos().x(), e->pos().y(), globalColor);
 			w->update();
+
+			
 		}
 	}
 }
 void ImageViewer::ViewerWidgetMouseButtonRelease(ViewerWidget* w, QEvent* event)
 {
 	QMouseEvent* e = static_cast<QMouseEvent*>(event);
+
 }
 void ImageViewer::ViewerWidgetMouseMove(ViewerWidget* w, QEvent* event)
 {
@@ -172,6 +211,10 @@ void ImageViewer::on_actionSave_as_triggered()
 void ImageViewer::on_actionClear_triggered()
 {
 	vW->clear();
+	vW->getPolygonPoints().clear();
+	vW->setDrawLineActivated(false);
+	vW->hasObject = false;
+	vW->update();
 }
 void ImageViewer::on_actionExit_triggered()
 {

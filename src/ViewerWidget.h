@@ -1,5 +1,6 @@
 #pragma once
 #include <QtWidgets>
+#include <QVector>
 class ViewerWidget :public QWidget {
 	Q_OBJECT
 private:
@@ -9,6 +10,7 @@ private:
 
 	bool drawLineActivated = false;
 	QPoint drawLineBegin = QPoint(0, 0);
+	QVector <QPoint> polygonPoints;
 
 public:
 	ViewerWidget(QSize imgSize, QWidget* parent = Q_NULLPTR);
@@ -41,11 +43,15 @@ public:
 	int getImgHeight() { return img ? img->height() : 0; };
 
 	void clear();
+	void clearPolygon();
 
 	//Algorithms
 	void drawLineDDA(QPoint start, QPoint end, QColor color);
 	void drawLineBresenham(QPoint start, QPoint end, QColor color);
 	void drawCircle(QPoint center, float radius, QColor color);
+	void addPolygonPoints(QPoint p);
+	QVector <QPoint>& getPolygonPoints();
+	bool hasObject = false;
 
 public slots:
 	void paintEvent(QPaintEvent* event) Q_DECL_OVERRIDE;
