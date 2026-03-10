@@ -142,7 +142,8 @@ void ViewerWidget::clear()
 {
 	if (!img) return;
 	img->fill(Qt::white);
-	clearPolygon();
+	
+	//hasObject = false;
 	update();
 }
 
@@ -218,7 +219,7 @@ void ViewerWidget::drawLineBresenham(QPoint start, QPoint end, QColor color)
 		if(isSwap) y += sy;
 		else x += sx;
 	}
-	update();
+	//update();
 }
 
 void ViewerWidget::drawCircle(QPoint center, float radius, QColor color) 
@@ -253,7 +254,7 @@ void ViewerWidget::drawCircle(QPoint center, float radius, QColor color)
 		dvaX += 2;
 		x++;
 	}
-	update();
+	//update();
 }
 
 void ViewerWidget::addPolygonPoints(QPoint p)
@@ -264,6 +265,50 @@ void ViewerWidget::addPolygonPoints(QPoint p)
 QVector <QPoint>& ViewerWidget::getPolygonPoints()
 {
 	return polygonPoints;
+}
+
+
+void ViewerWidget::rotateAll(int angleDegre, QColor color, int algType)
+{
+	if (backupPoints.size() < 2) {
+		return;
+	}
+	QPoint S = backupPoints[0]; //центр вращени€ - всегда перва€ точка
+	double alpha = angleDegre * M_PI / 180.0; //угол в радианах
+
+	QVector<QPoint> rotated;
+
+	for (int i = 0; i < backupPoints.size(); ++i) {
+		int x = backupPoints[i].x();
+		int y = backupPoints[i].y();
+
+		// ‘ормулы со слайда
+		int newX = static_cast<int>(round(x - S.x()) * cos(alpha) - (y - S.y()) * sin(alpha) + S.x());
+		int newY = static_cast<int>(round(x - S.x()) * sin(alpha) + (y - S.y()) * cos(alpha) + S.y());
+		rotated.push_back(QPoint(newX, newY));
+	}
+
+	polygonPoints = rotated; //обновл€ем текущие точки повернутыми
+
+	img->fill(Qt::white); //очищаем изображение перед отрисовкой
+
+	if (algType == 2) { // ≈сли в списке выбран Circle
+		if (polygonPoints.size() >= 2) {
+			// —читаем радиус между повернутым центром и повернутой второй точкой
+			float r = sqrt(pow(rotated[1].x() - rotated[0].x(), 2) + pow(rotated[1].y() - rotated[0].y(), 2));
+			drawCircle(rotated[0], r, color);
+		}
+	}
+	else { // ≈сли DDA или Bresenham
+		for (int i = 0; i < rotated.size() - 1; ++i) {
+			drawLine(rotated[i], rotated[i + 1], color, 0, algType);
+		}
+		// ≈сли это был полигон (больше 2 точек) и он замкнут
+		if (hasObject && rotated.size() > 2) {
+			drawLine(rotated.back(), rotated.front(), color, 0, algType);
+		}
+	}
+	update();
 }
 
 

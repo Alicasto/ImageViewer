@@ -60,10 +60,13 @@ bool ImageViewer::ViewerWidgetEventFilter(QObject* obj, QEvent* event)
 }
 void ImageViewer::ViewerWidgetMouseButtonPress(ViewerWidget* w, QEvent* event)
 {
+	QMouseEvent* e = static_cast<QMouseEvent*>(event);
+	w->lastMousePos = e->pos();//zapominajem kde shvatili object
+
 	if (w->hasObject) {
 		return;
 	}
-	QMouseEvent* e = static_cast<QMouseEvent*>(event);
+	
 	int alagType = ui->comboBoxLineAlg->currentIndex();
 	
 	if (ui->toolButtonPolygon->isChecked()) {
@@ -85,10 +88,12 @@ void ImageViewer::ViewerWidgetMouseButtonPress(ViewerWidget* w, QEvent* event)
 		else if (e->button() == Qt::RightButton){
 			if (w->getPolygonPoints().size() > 2) {
 				w->drawLine(w->getPolygonPoints().back(), w->getPolygonPoints().front(), globalColor, 0, alagType);
-				w->getPolygonPoints().clear();
-				w->update();
-
+				//w->getPolygonPoints().clear();
 				w->hasObject = true;
+				w->backupPoints = w->getPolygonPoints();
+
+				ui->toolButtonPolygon->setChecked(false);
+				w->update();
 			}
 		
 		}
@@ -103,15 +108,24 @@ void ImageViewer::ViewerWidgetMouseButtonPress(ViewerWidget* w, QEvent* event)
 			QPoint end = e->pos();
 			float radius = sqrt(pow(end.x() - start.x(), 2) + pow(end.y() - start.y(), 2));//радиус линии зависит от длины отрезка
 			
+			w->getPolygonPoints().push_back(start); //индекс 0 - центр вращения
+			w->getPolygonPoints().push_back(end); //индекс 1 - конец линии или точка радиуса
+
 			w->drawLine(start, end, globalColor, radius, ui->comboBoxLineAlg->currentIndex());
 			//w->drawLine(w->getDrawLineBegin(), e->pos(), globalColor, ui->comboBoxLineAlg->currentIndex());
+			w->hasObject = true;
+			w->backupPoints = w->getPolygonPoints(); //для перемещения линии
 			w->setDrawLineActivated(false);
 
-			w->hasObject = true;
+			ui->toolButtonDrawLine->setChecked(false);
+			w->update();
 		}
 		else {
 			w->setDrawLineBegin(e->pos());//pos позиция мыши 
 			w->setDrawLineActivated(true);
+
+			w->getPolygonPoints().clear();
+
 			w->setPixel(e->pos().x(), e->pos().y(), globalColor);
 			w->update();
 
@@ -127,6 +141,44 @@ void ImageViewer::ViewerWidgetMouseButtonRelease(ViewerWidget* w, QEvent* event)
 void ImageViewer::ViewerWidgetMouseMove(ViewerWidget* w, QEvent* event)
 {
 	QMouseEvent* e = static_cast<QMouseEvent*>(event);
+
+	if ((e->buttons() & Qt::LeftButton) && w->hasObject) {
+		
+		if (w->getPolygonPoints().size() < 2) return;
+		if (w->backupPoints.isEmpty()) return;
+
+		int dx = e->pos().x() - w->lastMousePos.x();
+		int dy = e->pos().y() - w->lastMousePos.y();
+
+		for (QPoint& p : w->getPolygonPoints()) {
+			p.setX(p.x() + dx);
+			p.setY(p.y() + dy);
+		}
+		for (QPoint& p : w->backupPoints) {
+			p.setX(p.x() + dx);
+			p.setY(p.y() + dy);	
+		}
+		w->lastMousePos = e->pos();
+
+		w->clear();
+		int algType = ui->comboBoxLineAlg->currentIndex();
+		auto& pts = w->getPolygonPoints();
+
+		if (algType == 2) { // Circle
+			float r = sqrt(pow(pts[1].x() - pts[0].x(), 2) + pow(pts[1].y() - pts[0].y(), 2));
+			w->drawCircle(pts[0], r, globalColor);
+		}
+		else { // Line / Polygon
+			for (size_t i = 0; i < pts.size() - 1; ++i) {
+				w->drawLine(pts[i], pts[i + 1], globalColor, 0, algType);
+			}
+			if (pts.size() > 2) { // Замыкаем полигон
+				w->drawLine(pts.back(), pts.front(), globalColor, 0, algType);
+			}
+		}
+		w->update();
+
+	}
 }
 void ImageViewer::ViewerWidgetLeave(ViewerWidget* w, QEvent* event)
 {
@@ -228,5 +280,19 @@ void ImageViewer::on_pushButtonSetColor_clicked()
 		QString style_sheet = QString("background-color: %1;").arg(newColor.name(QColor::HexRgb));
 		ui->pushButtonSetColor->setStyleSheet(style_sheet);
 		globalColor = newColor;
+	}
+}
+
+void ImageViewer::on_spinBoxRotation_valueChanged(int value)
+{
+	if (ui->buttonRotate->isChecked()) {
+
+		// Если на холсте есть объект
+		if (vW->hasObject || !vW->getPolygonPoints().empty()) {
+			int algType = ui->comboBoxLineAlg->currentIndex();
+
+			// Вызываем функцию вращения
+			vW->rotateAll(value, globalColor, algType);
+		}
 	}
 }

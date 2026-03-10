@@ -47,4 +47,5 @@ private slots:
 
 	//Tools slots
 	void on_pushButtonSetColor_clicked();
+	void on_spinBoxRotation_valueChanged(int value);
 };

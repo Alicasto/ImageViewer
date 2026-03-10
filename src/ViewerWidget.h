@@ -51,7 +51,10 @@ public:
 	void drawCircle(QPoint center, float radius, QColor color);
 	void addPolygonPoints(QPoint p);
 	QVector <QPoint>& getPolygonPoints();
+	QVector<QPoint> backupPoints;
 	bool hasObject = false;
+	void rotateAll(int angleDegre, QColor color, int algType);
+	QPoint lastMousePos;
 
 public slots:
 	void paintEvent(QPaintEvent* event) Q_DECL_OVERRIDE;
