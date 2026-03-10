@@ -48,4 +48,8 @@ private slots:
 	//Tools slots
 	void on_pushButtonSetColor_clicked();
 	void on_spinBoxRotation_valueChanged(int value);
+	void on_pushButtonApplyScale_clicked();
+	void on_pushButtonReflectX_clicked();
+	void on_pushButtonReflectY_clicked();
+	void on_pushButtonShear_clicked();
 };

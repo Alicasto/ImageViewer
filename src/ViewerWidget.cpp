@@ -278,13 +278,12 @@ void ViewerWidget::rotateAll(int angleDegre, QColor color, int algType)
 
 	QVector<QPoint> rotated;
 
-	for (int i = 0; i < backupPoints.size(); ++i) {
-		int x = backupPoints[i].x();
-		int y = backupPoints[i].y();
-
-		// Формулы со слайда
-		int newX = static_cast<int>(round(x - S.x()) * cos(alpha) - (y - S.y()) * sin(alpha) + S.x());
-		int newY = static_cast<int>(round(x - S.x()) * sin(alpha) + (y - S.y()) * cos(alpha) + S.y());
+	//for (int i = 0; i < backupPoints.size(); ++i) {
+	//	int x = backupPoints[i].x();
+	//	int y = backupPoints[i].y();
+	for (const auto& P : backupPoints) {
+		int newX = static_cast<int>(round(P.x() - S.x()) * cos(alpha) - (P.y() - S.y()) * sin(alpha) + S.x());
+		int newY = static_cast<int>(round(P.x() - S.x()) * sin(alpha) + (P.y() - S.y()) * cos(alpha) + S.y());
 		rotated.push_back(QPoint(newX, newY));
 	}
 
@@ -308,6 +307,214 @@ void ViewerWidget::rotateAll(int angleDegre, QColor color, int algType)
 			drawLine(rotated.back(), rotated.front(), color, 0, algType);
 		}
 	}
+	update();
+}
+
+void ViewerWidget::scaleAll(double sx, double sy, QColor color, int algType)
+{
+	if (backupPoints.size() < 2) return;
+
+	QPoint S = backupPoints[0];
+	QVector<QPoint> scaled;
+
+	for (const auto& P : backupPoints) {
+		int newX = static_cast<int>(round(S.x() + sx * (P.x() - S.x())));
+		int newY = static_cast<int>(round(S.y() + sy * (P.y() - S.y())));
+		scaled.push_back(QPoint(newX, newY));
+
+	}
+
+	polygonPoints = scaled;
+	img->fill(Qt::white);
+
+	if (algType == 2) {
+		float r = sqrt(pow(polygonPoints[1].x() - polygonPoints[0].x(), 2) + pow(polygonPoints[1].y() - polygonPoints[0].y(), 2));
+		drawCircle(polygonPoints[0], r, color);
+	}
+	else {
+		for (int i = 0; i < polygonPoints.size() - 1; ++i) {
+			drawLine(polygonPoints[i], polygonPoints[i + 1], color, 0, algType);
+		}
+		if (hasObject && polygonPoints.size() > 2) {
+			drawLine(polygonPoints.last(), polygonPoints.first(), color, 0, algType);
+		}
+	}
+	update();
+}
+
+void ViewerWidget::reflectByX(QColor color, int algType)
+{
+	if (backupPoints.size() < 2) return;
+
+	QPoint S = backupPoints[0];
+	QVector<QPoint> reflected;
+
+	for (const auto& P : backupPoints) {
+		int newX = P.x();
+		int newY = static_cast<int>(round(2 * S.y() - P.y()));
+		reflected.push_back(QPoint(newX, newY));
+	}
+
+	backupPoints = reflected;
+	polygonPoints = reflected;
+
+	img->fill(Qt::white);
+	drawCurrentObject(color, algType);
+	update();
+}
+
+void ViewerWidget::reflectByY(QColor color, int algType)
+{
+	if (backupPoints.size() < 2) return;
+
+	QPoint S = backupPoints[0];
+	QVector<QPoint> reflected;
+
+	for (const auto& P : backupPoints) {
+		int newX = 2 * S.x() - P.x();
+		int newY = P.y();
+		reflected.push_back(QPoint(newX, newY));
+	}
+
+	backupPoints = reflected;
+	polygonPoints = reflected;
+
+	img->fill(Qt::white);
+	drawCurrentObject(color, algType);
+	update();
+}
+
+void ViewerWidget::drawCurrentObject(QColor color, int algType)
+{
+	if (polygonPoints.size() < 2) return;
+
+	if (algType == 2) { // Circle
+		float r = sqrt(pow(polygonPoints[1].x() - polygonPoints[0].x(), 2) +
+			pow(polygonPoints[1].y() - polygonPoints[0].y(), 2));
+		drawCircle(polygonPoints[0], r, color);
+	}
+	else {
+		for (int i = 0; i < polygonPoints.size() - 1; ++i) {
+			drawLine(polygonPoints[i], polygonPoints[i + 1], color, 0, algType);
+		}
+		if (hasObject && polygonPoints.size() > 2) {
+			drawLine(polygonPoints.last(), polygonPoints.first(), color, 0, algType);
+		}
+	}
+}
+
+void ViewerWidget::shearX(double k, QColor color, int algType)
+{
+	if (backupPoints.isEmpty() || backupPoints.size() < 2) return;
+
+	QPoint S = backupPoints[0];
+	QVector<QPoint> sheared;
+
+	for (const auto& P : backupPoints) {
+		int newX = static_cast<int>(round((P.x() - S.x()) + k * (P.y() - S.y()) + S.x()));
+		int newY = P.y();
+		sheared.push_back(QPoint(newX, newY));
+	}
+	polygonPoints = sheared;
+	img->fill(Qt::white);
+	drawCurrentObject(color, algType);
+	update();
+}
+
+double dot(QPoint a, QPoint b) {
+	return a.x() * b.x() + a.y() * b.y();
+}
+
+QPoint ViewerWidget::getIntersection(QPoint S, QPoint V, int edge, int limit)
+{
+	double t;
+	if (edge == 0 || edge == 1) { // Левая/Правая границы
+		t = (double)(limit - S.x()) / (V.x() - S.x());
+		return QPoint(limit, S.y() + t * (V.y() - S.y()));
+	}
+	else { // Верхняя/Нижняя границы
+		t = (double)(limit - S.y()) / (V.y() - S.y());
+		return QPoint(S.x() + t * (V.x() - S.x()), limit);
+	}
+}
+
+void ViewerWidget::clipLineCyrusBeck(int xMin, int yMin, int xMax, int yMax, int algType, QColor color)
+{
+	if (polygonPoints.size() != 2) return;
+
+	QPoint P1 = polygonPoints[0];
+	QPoint P2 = polygonPoints[1];
+	QPoint D = P2 - P1;
+
+	double tMin = 0.0;
+	double tMax = 1.0;
+
+	QPoint n[4] = { QPoint(1,0), QPoint(-1,0), QPoint(0,1), QPoint(0,-1) };
+	QPoint b[4] = { QPoint(xMax, yMin), QPoint(xMin, yMin), QPoint(xMin, yMax), QPoint(xMin, yMin)};
+
+	for (int i = 0; i < 4; i++) {
+		double dn = dot(D, n[i]);
+		double wn = dot(P1 - b[i], n[i]);
+
+		if (dn != 0){
+			double t = -wn / dn;
+			if(dn > 0){
+				tMin = max(tMin, t);
+			}
+			else {
+				tMax = min(tMax, t);
+			}
+		}
+		else if (wn < 0) {
+			return;
+		}
+	}
+	if(tMin <= tMax){
+		polygonPoints[0] = QPoint(P1.x() + tMin * D.x(), P1.y() + tMin * D.y());
+		polygonPoints[1] = QPoint(P1.x() + tMax * D.x(), P1.y() + tMax * D.y());
+		img->fill(Qt::white);
+		drawCurrentObject(color, algType);
+	}
+	else {
+		img->fill(Qt::white);
+	}
+	update();
+}
+
+void ViewerWidget::clipPolygonSH(int xMin, int yMin, int xMax, int yMax, int algType, QColor color)
+{
+	if (polygonPoints.size() < 3) return;
+
+	QVector<QPoint> input = polygonPoints;
+	int limits[4] = { xMin, xMax, yMin, yMax };
+
+	for (int edge = 0; edge < 4; edge++){
+		QVector<QPoint> output;
+		if (input.isEmpty()) break;
+		QPoint S = input.last();
+
+		for (const QPoint& V : input) {
+			bool vIn, sIn;
+			// Проверка "внутри" ли точки относительно текущей границы (edge)
+			if (edge == 0) { vIn = V.x() >= limits[0]; sIn = S.x() >= limits[0]; }
+			else if (edge == 1) { vIn = V.x() <= limits[1]; sIn = S.x() <= limits[1]; }
+			else if (edge == 2) { vIn = V.y() >= limits[2]; sIn = S.y() >= limits[2]; }
+			else { vIn = V.y() <= limits[3]; sIn = S.y() <= limits[3]; }
+
+			if (vIn) {
+				if (!sIn) output.push_back(getIntersection(S, V, edge, limits[edge]));
+				output.push_back(V);
+			}
+			else if (sIn) {
+				output.push_back(getIntersection(S, V, edge, limits[edge]));
+			}
+			S = V;
+		}
+		input = output;
+	}
+	polygonPoints = input;
+	img->fill(Qt::white);
+	drawCurrentObject(color, algType);
 	update();
 }
 

@@ -145,7 +145,7 @@ void ImageViewer::ViewerWidgetMouseMove(ViewerWidget* w, QEvent* event)
 	if ((e->buttons() & Qt::LeftButton) && w->hasObject) {
 		
 		if (w->getPolygonPoints().size() < 2) return;
-		if (w->backupPoints.isEmpty()) return;
+		//if (w->backupPoints.isEmpty()) return;
 
 		int dx = e->pos().x() - w->lastMousePos.x();
 		int dy = e->pos().y() - w->lastMousePos.y();
@@ -159,23 +159,44 @@ void ImageViewer::ViewerWidgetMouseMove(ViewerWidget* w, QEvent* event)
 			p.setY(p.y() + dy);	
 		}
 		w->lastMousePos = e->pos();
-
 		w->clear();
 		int algType = ui->comboBoxLineAlg->currentIndex();
-		auto& pts = w->getPolygonPoints();
 
-		if (algType == 2) { // Circle
-			float r = sqrt(pow(pts[1].x() - pts[0].x(), 2) + pow(pts[1].y() - pts[0].y(), 2));
-			w->drawCircle(pts[0], r, globalColor);
-		}
-		else { // Line / Polygon
-			for (size_t i = 0; i < pts.size() - 1; ++i) {
-				w->drawLine(pts[i], pts[i + 1], globalColor, 0, algType);
+		QVector<QPoint> originalPoints = w->getPolygonPoints();
+
+		if (ui->pushButtonClip->isChecked()) {
+			// Задаем границы окна (можно 50 пикселей от края или по размеру виджета)
+			int margin = 20;
+			int xMin = margin;
+			int yMin = margin;
+			int xMax = w->width() - margin;
+			int yMax = w->height() - margin;
+
+			if (originalPoints.size() == 2) {
+				w->clipLineCyrusBeck(xMin, yMin, xMax, yMax, algType, globalColor);
 			}
-			if (pts.size() > 2) { // Замыкаем полигон
-				w->drawLine(pts.back(), pts.front(), globalColor, 0, algType);
+			else if (originalPoints.size() > 2) {
+				w->clipPolygonSH(xMin, yMin, xMax, yMax, algType, globalColor);
+			}
+
+		}
+		auto& pts = w->getPolygonPoints();
+		
+		if (!pts.isEmpty()) {
+			if (algType == 2) { // Circle
+				float r = sqrt(pow(pts[1].x() - pts[0].x(), 2) + pow(pts[1].y() - pts[0].y(), 2));
+				w->drawCircle(pts[0], r, globalColor);
+			}
+			else { // Line / Polygon
+				for (size_t i = 0; i < pts.size() - 1; ++i) {
+					w->drawLine(pts[i], pts[i + 1], globalColor, 0, algType);
+				}
+				if (pts.size() > 2) { // Замыкаем полигон
+					w->drawLine(pts.back(), pts.front(), globalColor, 0, algType);
+				}
 			}
 		}
+		w->getPolygonPoints() = originalPoints;
 		w->update();
 
 	}
@@ -189,6 +210,29 @@ void ImageViewer::ViewerWidgetEnter(ViewerWidget* w, QEvent* event)
 void ImageViewer::ViewerWidgetWheel(ViewerWidget* w, QEvent* event)
 {
 	QWheelEvent* wheelEvent = static_cast<QWheelEvent*>(event);
+	if (!w->hasObject) return;
+
+	/*double scaleFactor = 1.0;
+
+	if (wheelEvent->angleDelta().y() > 0) {
+		scaleFactor = 1.25;
+	}
+	else {
+		scaleFactor = 0.75;
+	}*/
+	static double cursorSX = 1.0;
+	static double cursorSY = 1.0;
+	if (wheelEvent->angleDelta().y() > 0) {
+		cursorSX *= 1.25;
+		cursorSY *= 1.25;
+	}
+	else {
+		cursorSX *= 0.75;
+		cursorSY *= 0.75;
+	}
+	w->scaleAll(cursorSX, cursorSY, globalColor, ui->comboBoxLineAlg->currentIndex());
+
+	//w->backupPoints = w->getPolygonPoints();
 }
 
 //ImageViewer Events
@@ -294,5 +338,40 @@ void ImageViewer::on_spinBoxRotation_valueChanged(int value)
 			// Вызываем функцию вращения
 			vW->rotateAll(value, globalColor, algType);
 		}
+	}
+}
+
+void ImageViewer::on_pushButtonApplyScale_clicked()
+{
+	if (!vW || !vW->hasObject) {
+		return;
+	}
+
+	double sx = ui->doubleSpinBoxX->value();
+	double sy = ui->doubleSpinBoxY->value();
+	vW->scaleAll(sx, sy, globalColor, ui->comboBoxLineAlg->currentIndex());
+	
+	
+}
+
+void ImageViewer::on_pushButtonReflectX_clicked()
+{
+	if (vW->hasObject) {
+		vW->reflectByX(globalColor, ui->comboBoxLineAlg->currentIndex());
+	}
+}
+
+void ImageViewer::on_pushButtonReflectY_clicked()
+{
+	if (vW->hasObject) {
+		vW->reflectByY(globalColor, ui->comboBoxLineAlg->currentIndex());
+	}
+}
+
+void ImageViewer::on_pushButtonShear_clicked()
+{
+	if (vW->hasObject) {
+		double k = ui->doubleSpinBoxShear->value();
+		vW->shearX(k, globalColor, ui->comboBoxLineAlg->currentIndex());
 	}
 }

@@ -55,6 +55,14 @@ public:
 	bool hasObject = false;
 	void rotateAll(int angleDegre, QColor color, int algType);
 	QPoint lastMousePos;
+	void scaleAll(double sx, double sy, QColor color, int algType);
+	void reflectByX(QColor color, int algType);
+	void reflectByY(QColor color, int algType);
+	void drawCurrentObject(QColor color, int algType);
+	void shearX(double x, QColor color, int algType);
+	QPoint getIntersection(QPoint S, QPoint V, int edge, int limit);
+	void clipLineCyrusBeck(int xMin, int yMin, int xMax, int yMax, int algType, QColor color);
+	void clipPolygonSH(int xMin, int yMin, int xMax, int yMax, int algType, QColor color);
 
 public slots:
 	void paintEvent(QPaintEvent* event) Q_DECL_OVERRIDE;
