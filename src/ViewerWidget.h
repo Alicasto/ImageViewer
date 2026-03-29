@@ -58,11 +58,17 @@ public:
 	void scaleAll(double sx, double sy, QColor color, int algType);
 	void reflectByX(QColor color, int algType);
 	void reflectByY(QColor color, int algType);
-	void drawCurrentObject(QColor color, int algType);
+	void drawCurrentObject(QColor color, int algType, bool fillEnabled = false, int curveMode = -1);
 	void shearX(double x, QColor color, int algType);
 	QPoint getIntersection(QPoint S, QPoint V, int edge, int limit);
 	void clipLineCyrusBeck(int xMin, int yMin, int xMax, int yMax, int algType, QColor color);
 	void clipPolygonSH(int xMin, int yMin, int xMax, int yMax, int algType, QColor color);
+	void fillPolygonScanLine(QColor color);
+	void fillTriangle(QPoint A, QPoint B, QPoint C, QColor colA, QColor colB, QColor colC, bool useBarycentric);
+	void drawFerguson(const QVector<QPoint>& pts, QColor color);
+	void drawBezierDeCasteljau(const QVector<QPoint>& pts, QColor color);
+	void drawCoonsBSpline(const QVector<QPoint>& pts, QColor color);
+	
 
 public slots:
 	void paintEvent(QPaintEvent* event) Q_DECL_OVERRIDE;

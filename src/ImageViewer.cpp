@@ -66,15 +66,55 @@ void ImageViewer::ViewerWidgetMouseButtonPress(ViewerWidget* w, QEvent* event)
 	if (w->hasObject) {
 		return;
 	}
-	
+
 	int alagType = ui->comboBoxLineAlg->currentIndex();
-	
+
+	if (ui->pushButtonKrivka->isChecked()) {
+
+		if (e->button() == Qt::LeftButton) {
+			w->getPolygonPoints().push_back(e->pos());
+
+			// Рисуем точку и каркас (черновик)
+			w->setPixel(e->pos().x(), e->pos().y(), globalColor);
+			if (w->getPolygonPoints().size() > 1) {
+				QPoint p1 = w->getPolygonPoints()[w->getPolygonPoints().size() - 2];
+				w->drawLine(p1, e->pos(), Qt::lightGray, 0, 0);
+			}
+			w->update();
+		}
+		// ПРАВЫЙ КЛИК: Завершаем ввод и строим кривую
+		else if (e->button() == Qt::RightButton) {
+			auto& pts = w->getPolygonPoints();
+			if (pts.size() >= 2) { // Нужно минимум 2 точки
+				w->clear();
+				int curveIdx = ui->comboBoxKrivky->currentIndex();
+
+				// Вызываем алгоритмы (они у тебя уже поддерживают разное кол-во точек)
+				if (curveIdx == 0) w->drawFerguson(pts, globalColor);
+				else if (curveIdx == 1) w->drawBezierDeCasteljau(pts, globalColor);
+				else if (curveIdx == 2) w->drawCoonsBSpline(pts, globalColor);
+
+				// Рисуем финальный каркас
+				for (int i = 0; i < (int)pts.size() - 1; ++i) {
+					w->drawLine(pts[i], pts[i + 1], Qt::lightGray, 0, 0);
+				}
+
+				w->hasObject = true;
+				w->backupPoints = pts;
+				ui->pushButtonKrivka->setChecked(false); // Отжимаем кнопку
+				w->update();
+			}
+		}
+		return;
+	}
+
+
 	if (ui->toolButtonPolygon->isChecked()) {
 		if (w->getDrawLineActivated()) return;
-		
-		if(e->button() == Qt::LeftButton){
+
+		if (e->button() == Qt::LeftButton) {
 			w->getPolygonPoints().push_back(e->pos());
-			
+
 			if (w->getPolygonPoints().size() > 1) {
 				QPoint start = w->getPolygonPoints()[w->getPolygonPoints().size() - 2];
 				QPoint end = w->getPolygonPoints().back();
@@ -85,7 +125,7 @@ void ImageViewer::ViewerWidgetMouseButtonPress(ViewerWidget* w, QEvent* event)
 			}
 			w->update();
 		}
-		else if (e->button() == Qt::RightButton){
+		else if (e->button() == Qt::RightButton) {
 			if (w->getPolygonPoints().size() > 2) {
 				w->drawLine(w->getPolygonPoints().back(), w->getPolygonPoints().front(), globalColor, 0, alagType);
 				//w->getPolygonPoints().clear();
@@ -95,19 +135,19 @@ void ImageViewer::ViewerWidgetMouseButtonPress(ViewerWidget* w, QEvent* event)
 				ui->toolButtonPolygon->setChecked(false);
 				w->update();
 			}
-		
+
 		}
-		
+
 	}
 	else if (e->button() == Qt::LeftButton && ui->toolButtonDrawLine->isChecked()) //рисуется только если кнопка зажата в уи
 	{
 		if (!w->getPolygonPoints().empty()) return;
-		
+
 		if (w->getDrawLineActivated()) {
 			QPoint start = w->getDrawLineBegin();
 			QPoint end = e->pos();
 			float radius = sqrt(pow(end.x() - start.x(), 2) + pow(end.y() - start.y(), 2));//радиус линии зависит от длины отрезка
-			
+
 			w->getPolygonPoints().push_back(start); //индекс 0 - центр вращения
 			w->getPolygonPoints().push_back(end); //индекс 1 - конец линии или точка радиуса
 
@@ -129,76 +169,82 @@ void ImageViewer::ViewerWidgetMouseButtonPress(ViewerWidget* w, QEvent* event)
 			w->setPixel(e->pos().x(), e->pos().y(), globalColor);
 			w->update();
 
-			
+
 		}
 	}
 }
-void ImageViewer::ViewerWidgetMouseButtonRelease(ViewerWidget* w, QEvent* event)
-{
-	QMouseEvent* e = static_cast<QMouseEvent*>(event);
 
-}
 void ImageViewer::ViewerWidgetMouseMove(ViewerWidget* w, QEvent* event)
 {
 	QMouseEvent* e = static_cast<QMouseEvent*>(event);
 
 	if ((e->buttons() & Qt::LeftButton) && w->hasObject) {
-		
 		if (w->getPolygonPoints().size() < 2) return;
-		//if (w->backupPoints.isEmpty()) return;
 
 		int dx = e->pos().x() - w->lastMousePos.x();
 		int dy = e->pos().y() - w->lastMousePos.y();
 
+		// 1. Двигаем точки
 		for (QPoint& p : w->getPolygonPoints()) {
-			p.setX(p.x() + dx);
-			p.setY(p.y() + dy);
+			p.rx() += dx;
+			p.ry() += dy;
 		}
 		for (QPoint& p : w->backupPoints) {
-			p.setX(p.x() + dx);
-			p.setY(p.y() + dy);	
+			p.rx() += dx;
+			p.ry() += dy;
 		}
 		w->lastMousePos = e->pos();
 		w->clear();
+
+		// 2. Подготавливаем данные
 		int algType = ui->comboBoxLineAlg->currentIndex();
-
 		QVector<QPoint> originalPoints = w->getPolygonPoints();
+		auto& pts = w->getPolygonPoints(); // Ссылка на текущие точки
 
+		// 3. ПРОВЕРКА НА КРИВЫЕ (Если нажата кнопка)
+		if (ui->pushButtonKrivka->isChecked()) {
+			int curveIdx = ui->comboBoxKrivky->currentIndex();
+
+			if (curveIdx == 0) w->drawFerguson(pts, globalColor);
+			else if (curveIdx == 1) w->drawBezierDeCasteljau(pts, globalColor);
+			else if (curveIdx == 2) w->drawCoonsBSpline(pts, globalColor);
+
+			// Каркас
+			for (int i = 0; i < (int)pts.size() - 1; ++i) {
+				w->drawLine(pts[i], pts[i + 1], Qt::lightGray, 0, 0);
+			}
+			for (const QPoint& p : pts) {
+				w->drawCircle(p, 3, Qt::red); // Красные точки-узлы
+			}
+			w->update();
+			return; // Важно: выходим, чтобы не рисовать обычные линии!
+		}
+
+		// 4. ПРОВЕРКА НА КЛИППИНГ (Только для обычных линий)
 		if (ui->pushButtonClip->isChecked()) {
-			// Задаем границы окна (можно 50 пикселей от края или по размеру виджета)
 			int margin = 20;
-			int xMin = margin;
-			int yMin = margin;
-			int xMax = w->width() - margin;
-			int yMax = w->height() - margin;
-
-			if (originalPoints.size() == 2) {
-				w->clipLineCyrusBeck(xMin, yMin, xMax, yMax, algType, globalColor);
-			}
-			else if (originalPoints.size() > 2) {
-				w->clipPolygonSH(xMin, yMin, xMax, yMax, algType, globalColor);
-			}
-
+			if (originalPoints.size() == 2)
+				w->clipLineCyrusBeck(margin, margin, w->width() - margin, w->height() - margin, algType, globalColor);
+			else if (originalPoints.size() > 2)
+				w->clipPolygonSH(margin, margin, w->width() - margin, w->height() - margin, algType, globalColor);
 		}
-		auto& pts = w->getPolygonPoints();
-		
-		if (!pts.isEmpty()) {
-			if (algType == 2) { // Circle
-				float r = sqrt(pow(pts[1].x() - pts[0].x(), 2) + pow(pts[1].y() - pts[0].y(), 2));
-				w->drawCircle(pts[0], r, globalColor);
+
+		// 5. ОБЫЧНОЕ РИСОВАНИЕ (Если не сработал return выше)
+		if (algType == 2) { // Круг
+			float r = sqrt(pow(pts[1].x() - pts[0].x(), 2) + pow(pts[1].y() - pts[0].y(), 2));
+			w->drawCircle(pts[0], r, globalColor);
+		}
+		else {
+			for (size_t i = 0; i < pts.size() - 1; ++i) {
+				w->drawLine(pts[i], pts[i + 1], globalColor, 0, algType);
 			}
-			else { // Line / Polygon
-				for (size_t i = 0; i < pts.size() - 1; ++i) {
-					w->drawLine(pts[i], pts[i + 1], globalColor, 0, algType);
-				}
-				if (pts.size() > 2) { // Замыкаем полигон
-					w->drawLine(pts.back(), pts.front(), globalColor, 0, algType);
-				}
+			if (pts.size() > 2) {
+				w->drawLine(pts.back(), pts.front(), globalColor, 0, algType);
 			}
 		}
+
 		w->getPolygonPoints() = originalPoints;
 		w->update();
-
 	}
 }
 void ImageViewer::ViewerWidgetLeave(ViewerWidget* w, QEvent* event)
@@ -220,21 +266,23 @@ void ImageViewer::ViewerWidgetWheel(ViewerWidget* w, QEvent* event)
 	else {
 		scaleFactor = 0.75;
 	}*/
-	static double cursorSX = 1.0;
-	static double cursorSY = 1.0;
+	double scaleFactor;
+
 	if (wheelEvent->angleDelta().y() > 0) {
-		cursorSX *= 1.25;
-		cursorSY *= 1.25;
+		scaleFactor = 1.25;
 	}
 	else {
-		cursorSX *= 0.75;
-		cursorSY *= 0.75;
+		scaleFactor = 0.75;
 	}
-	w->scaleAll(cursorSX, cursorSY, globalColor, ui->comboBoxLineAlg->currentIndex());
+	w->scaleAll(scaleFactor, scaleFactor, globalColor, ui->comboBoxLineAlg->currentIndex());
 
 	//w->backupPoints = w->getPolygonPoints();
 }
+void ImageViewer::ViewerWidgetMouseButtonRelease(ViewerWidget* w, QEvent* event)
+{
+	QMouseEvent* e = static_cast<QMouseEvent*>(event);
 
+}
 //ImageViewer Events
 void ImageViewer::closeEvent(QCloseEvent* event)
 {

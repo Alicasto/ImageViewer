@@ -1,4 +1,5 @@
-#include   "ViewerWidget.h"
+#include "ViewerWidget.h"
+#include <algorithm>
 using namespace std;
 ViewerWidget::ViewerWidget(QSize imgSize, QWidget* parent)
 	: QWidget(parent)
@@ -110,7 +111,7 @@ void ViewerWidget::setPixel(int x, int y, const QColor& color)
 	}
 }
 
-bool ViewerWidget::isInside(int x, int y)
+bool ViewerWidget::isInside(int x, int y)//checking if the coordinates are within the image boundaries
 {
 	return img && x >= 0 && y >= 0 && x < img->width() && y < img->height();
 }
@@ -149,7 +150,7 @@ void ViewerWidget::clear()
 
 void ViewerWidget::clearPolygon()
 {
-	polygonPoints.clear();
+	polygonPoints.clear();//clearing pole of points for polygon
 }
 
 void ViewerWidget::drawLineDDA(QPoint start, QPoint end, QColor color)
@@ -199,7 +200,7 @@ void ViewerWidget::drawLineBresenham(QPoint start, QPoint end, QColor color)
 	}
 
 	int k1 = 2 * dy;
-	int p = 2 * (dy - dx);
+	int p = 2 * dy - dx;
 	int k2 = 2 * dy - 2 * dx;
 
 	int x = x1;
@@ -259,12 +260,12 @@ void ViewerWidget::drawCircle(QPoint center, float radius, QColor color)
 
 void ViewerWidget::addPolygonPoints(QPoint p)
 {
-	polygonPoints.push_back(p);
+	polygonPoints.push_back(p);//adding point to pole of points for polygon
 }
 
 QVector <QPoint>& ViewerWidget::getPolygonPoints()
 {
-	return polygonPoints;
+	return polygonPoints;//returning pole of points for polygon
 }
 
 
@@ -282,9 +283,9 @@ void ViewerWidget::rotateAll(int angleDegre, QColor color, int algType)
 	//	int x = backupPoints[i].x();
 	//	int y = backupPoints[i].y();
 	for (const auto& P : backupPoints) {
-		int newX = static_cast<int>(round(P.x() - S.x()) * cos(alpha) - (P.y() - S.y()) * sin(alpha) + S.x());
-		int newY = static_cast<int>(round(P.x() - S.x()) * sin(alpha) + (P.y() - S.y()) * cos(alpha) + S.y());
-		rotated.push_back(QPoint(newX, newY));
+		int newX = static_cast<int>(round((P.x() - S.x()) * cos(alpha) - (P.y() - S.y()) * sin(alpha) + S.x()));
+		int newY = static_cast<int>(round((P.x() - S.x()) * sin(alpha) + (P.y() - S.y()) * cos(alpha) + S.y()));
+		rotated.push_back(QPoint(newX, newY));//новые точки после поворота добавляем в поле rotated
 	}
 
 	polygonPoints = rotated; //обновляем текущие точки повернутыми
@@ -315,17 +316,28 @@ void ViewerWidget::scaleAll(double sx, double sy, QColor color, int algType)
 	if (backupPoints.size() < 2) return;
 
 	QPoint S = backupPoints[0];
-	QVector<QPoint> scaled;
+	QVector<QPoint> scaled;//po mashtabe body
 
-	for (const auto& P : backupPoints) {
-		int newX = static_cast<int>(round(S.x() + sx * (P.x() - S.x())));
+	for (const auto& P : backupPoints) {//backup to pred mashtabom
+		int newX = static_cast<int>(round(S.x() + sx * (P.x() - S.x())));//sx - koeff mashtabirovaniya, S.x() - koordinata centra mashtabirovaniya, P.x() - koordinata tochki do mashtabirovaniya
 		int newY = static_cast<int>(round(S.y() + sy * (P.y() - S.y())));
-		scaled.push_back(QPoint(newX, newY));
+		scaled.push_back(QPoint(newX, newY));//pridali do pola scaled
 
 	}
 
 	polygonPoints = scaled;
+	backupPoints = scaled;
 	img->fill(Qt::white);
+
+	if (hasObject && polygonPoints.size() > 2) {
+		if (polygonPoints.size() == 3) {//triangle
+			bool useBarycentric = true; // Или возьми из UI
+			fillTriangle(polygonPoints[0], polygonPoints[1], polygonPoints[2], Qt::red, Qt::green, Qt::blue, useBarycentric);
+		}
+		else {
+			fillPolygonScanLine(color);
+		}
+	}
 
 	if (algType == 2) {
 		float r = sqrt(pow(polygonPoints[1].x() - polygonPoints[0].x(), 2) + pow(polygonPoints[1].y() - polygonPoints[0].y(), 2));
@@ -384,10 +396,29 @@ void ViewerWidget::reflectByY(QColor color, int algType)
 	update();
 }
 
-void ViewerWidget::drawCurrentObject(QColor color, int algType)
+void ViewerWidget::drawCurrentObject(QColor color, int algType, bool fillEnabled, int curveMode)
 {
 	if (polygonPoints.size() < 2) return;
 
+	if (curveMode != -1) {
+		if (curveMode == 0) {
+			drawFerguson(polygonPoints, color);
+		}
+		else if (curveMode == 1) {
+			drawBezierDeCasteljau(polygonPoints, color);
+		}
+		else if (curveMode == 2) {
+			drawCoonsBSpline(polygonPoints, color);
+		}
+		for (int i = 0; i < polygonPoints.size() - 1; ++i) {
+			drawLine(polygonPoints[i], polygonPoints[i + 1], Qt::lightGray, 0, 0);
+		}
+		return;
+	}
+	if (fillEnabled && polygonPoints.size() > 2){
+		fillPolygonScanLine(color);
+	}
+	
 	if (algType == 2) { // Circle
 		float r = sqrt(pow(polygonPoints[1].x() - polygonPoints[0].x(), 2) +
 			pow(polygonPoints[1].y() - polygonPoints[0].y(), 2));
@@ -466,6 +497,7 @@ void ViewerWidget::clipLineCyrusBeck(int xMin, int yMin, int xMax, int yMax, int
 			}
 		}
 		else if (wn < 0) {
+			polygonPoints.clear();
 			return;
 		}
 	}
@@ -476,9 +508,10 @@ void ViewerWidget::clipLineCyrusBeck(int xMin, int yMin, int xMax, int yMax, int
 		drawCurrentObject(color, algType);
 	}
 	else {
-		img->fill(Qt::white);
+		polygonPoints.clear();
+		//img->fill(Qt::white);
 	}
-	update();
+	//update();
 }
 
 void ViewerWidget::clipPolygonSH(int xMin, int yMin, int xMax, int yMax, int algType, QColor color)
@@ -513,9 +546,173 @@ void ViewerWidget::clipPolygonSH(int xMin, int yMin, int xMax, int yMax, int alg
 		input = output;
 	}
 	polygonPoints = input;
-	img->fill(Qt::white);
-	drawCurrentObject(color, algType);
-	update();
+	/*img->fill(Qt::white);*/
+	//drawCurrentObject(color, algType);
+	/*update();*/
+}
+
+void ViewerWidget::fillPolygonScanLine(QColor color)
+{
+	if (polygonPoints.size() < 3) return;
+
+	int yMin = polygonPoints[0].y();
+	int yMax = polygonPoints[0].y();
+	for (const QPoint& p : polygonPoints) {
+		yMin = std::min(yMin, p.y());
+		yMax = std::max(yMax, p.y());
+	}
+
+	for (int y = yMin; y <= yMax; y++) {
+		
+		QVector<int> xIntersections;
+		
+		for (int i = 0; i < polygonPoints.size(); i++) {
+			QPoint p1 = polygonPoints[i];
+			QPoint p2 = polygonPoints[(i + 1) % polygonPoints.size()];
+			
+			if ((p1.y() <= y && p2.y() > y) || (p1.y() > y && p2.y() <= y)) {
+				
+				double x = p1.x() + (double)(y - p1.y()) * (p2.x() - p1.x()) / (p2.y() - p1.y());
+				xIntersections.push_back(static_cast<int>(round(x)));
+			}
+		}
+		
+		sort(xIntersections.begin(), xIntersections.end());
+		
+		for (int i = 0; i < xIntersections.size(); i += 2) {
+			if (i + 1 < xIntersections.size()) {
+				for (int x = xIntersections[i]; x <= xIntersections[i + 1]; x++) {
+					setPixel(x, y, color);
+				}
+			}
+		}
+	}
+}
+
+void ViewerWidget::fillTriangle(QPoint A, QPoint B, QPoint C, QColor colA, QColor colB, QColor colC, bool useBarycentric)
+{
+	int yMin = std::min({ A.y(), B.y(), C.y() });
+	int yMax = std::max({ A.y(), B.y(), C.y() });
+
+	// Знаменатель из формулы барицентрических координат
+	float det = static_cast<float>((B.y() - C.y()) * (A.x() - C.x()) + (C.x() - B.x()) * (A.y() - C.y()));
+
+	// Если треугольник вырожденный (линия), выходим
+	if (std::abs(det) < 0.00001f) return;
+
+	for (int y = yMin; y <= yMax; y++) {
+		// Поиск пересечений Scan-line для треугольника
+		QVector<int> xInter;
+		QPoint edges[3][2] = { {A, B}, {B, C}, {C, A} };
+		for (int i = 0; i < 3; i++) {
+			QPoint p1 = edges[i][0];
+			QPoint p2 = edges[i][1];
+			if ((p1.y() <= y && p2.y() > y) || (p2.y() <= y && p1.y() > y)) {
+				int x = p1.x() + (double)(y - p1.y()) * (p2.x() - p1.x()) / (p2.y() - p1.y());
+				xInter.push_back(x);
+			}
+		}
+		std::sort(xInter.begin(), xInter.end());
+
+		if (xInter.size() >= 2) {
+			for (int x = xInter[0]; x <= xInter[1]; x++) {
+				// ВЫЧИСЛЕНИЕ ВЕСОВ (Барицентрические координаты)
+				float wA = ((B.y() - C.y()) * (x - C.x()) + (C.x() - B.x()) * (y - C.y())) / det;
+				float wB = ((C.y() - A.y()) * (x - C.x()) + (A.x() - C.x()) * (y - C.y())) / det;
+				float wC = 1.0f - wA - wB;
+
+				QColor pixelColor;
+				if (useBarycentric) {
+					// Барицентрическая интерполяция: смешиваем цвета пропорционально весам
+					int r = std::max(0, std::min(255, (int)(wA * colA.red() + wB * colB.red() + wC * colC.red())));
+					int g = std::max(0, std::min(255, (int)(wA * colA.green() + wB * colB.green() + wC * colC.green())));
+					int b = std::max(0, std::min(255, (int)(wA * colA.blue() + wB * colB.blue() + wC * colC.blue())));
+					pixelColor = QColor(r, g, b);
+				}
+				else {
+					// Nearest Neighbor: цвет вершины с максимальным весом (геометрически ближайшей)
+					if (wA >= wB && wA >= wC) pixelColor = colA;
+					else if (wB >= wA && wB >= wC) pixelColor = colB;
+					else pixelColor = colC;
+				}
+				setPixel(x, y, pixelColor);
+			}
+		}
+	}
+}
+
+void ViewerWidget::drawFerguson(const QVector<QPoint>& pts, QColor color)
+{
+	if (pts.size() < 4) return;
+
+	drawLine(pts[0], pts[1], Qt::blue, 0, 0);//vektor z zacatku
+	drawLine(pts[3], pts[2], Qt::blue, 0, 0);//vektor v konce
+
+	QPoint p0 = pts[0];      
+	QPoint p1 = pts[3];      
+	QPoint v0 = pts[1] - pts[0]; 
+	QPoint v1 = pts[2] - pts[3]; 
+
+	QPoint prev = p0;
+	
+	for (double t = 0; t <= 1.001; t += 0.01) {
+		double t2 = t * t;
+		double t3 = t2 * t;
+		
+		//funkcie hermita
+		double f0 = 2 * t3 - 3 * t2 + 1;
+		double f1 = -2 * t3 + 3 * t2;
+		double f2 = t3 - 2 * t2 + t;
+		double f3 = t3 - t2;
+		
+		//koordinaty tochki na krivoy Ferguson
+		int x = round(p0.x() * f0 + p1.x() * f1 + v0.x() * f2 + v1.x() * f3);
+		int y = round(p0.y() * f0 + p1.y() * f1 + v0.y() * f2 + v1.y() * f3);
+		
+		QPoint curr(x, y);
+		drawLine(prev, curr, color, 0, 0);
+		prev = curr;
+	}
+}
+
+void ViewerWidget::drawBezierDeCasteljau(const QVector<QPoint>& pts, QColor color)
+{
+	if (pts.size() < 2) return;
+	QPoint prev = pts[0];
+	for (double t = 0; t <= 1.001; t += 0.01) {
+		QVector<QPointF> tmp;
+		for (const auto& p : pts) {
+			tmp.push_back(QPointF(p));
+		}
+		for (int i = 1; i < pts.size(); ++i) {
+			for (int j = 0; j < pts.size() - i; ++j) {
+				tmp[j] = (1.0 - t) * tmp[j] + t * tmp[j + 1];
+			}
+		}
+		QPoint curr = tmp[0].toPoint();
+		drawLine(prev, curr, color, 0, 0);
+		prev = curr;
+	}
+}
+
+void ViewerWidget::drawCoonsBSpline(const QVector<QPoint>& pts, QColor color)
+{
+	if (pts.size() < 4) return;
+	for (int i = 1; i < pts.size() - 2; ++i) {
+		QPoint p0 = pts[i - 1], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2], prev_q;
+		for (double t = 0; t <= 1.001; t += 0.02) {
+			double t2 = t * t;
+			double t3 = t2 * t;
+			double a0 = (-t3 + 3 * t2 - 3 * t + 1) / 6.0;
+			double a1 = (3 * t3 - 6 * t2 + 4) / 6.0;
+			double a2 = (-3 * t3 + 3 * t2 + 3 * t + 1) / 6.0;
+			double a3 = t3 / 6.0;
+			QPoint curr(round(a0 * p0.x() + a1 * p1.x() + a2 * p2.x() + a3 * p3.x()),
+				round(a0 * p0.y() + a1 * p1.y() + a2 * p2.y() + a3 * p3.y()));
+			if (t > 0) drawLine(prev_q, curr, color, 0, 0);
+			prev_q = curr;
+		}
+	}
 }
 
 
