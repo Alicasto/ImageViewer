@@ -179,6 +179,7 @@ void ImageViewer::ViewerWidgetMouseMove(ViewerWidget* w, QEvent* event)
 	QMouseEvent* e = static_cast<QMouseEvent*>(event);
 
 	if ((e->buttons() & Qt::LeftButton) && w->hasObject) {
+
 		if (w->getPolygonPoints().size() < 2) return;
 
 		int dx = e->pos().x() - w->lastMousePos.x();
@@ -186,22 +187,21 @@ void ImageViewer::ViewerWidgetMouseMove(ViewerWidget* w, QEvent* event)
 
 		// 1. Двигаем точки
 		for (QPoint& p : w->getPolygonPoints()) {
-			p.rx() += dx;
-			p.ry() += dy;
+			p.setX(p.x() + dx);
+			p.setY(p.y() + dy);
 		}
 		for (QPoint& p : w->backupPoints) {
-			p.rx() += dx;
-			p.ry() += dy;
+			p.setX(p.x() + dx);
+			p.setY(p.y() + dy);
 		}
 		w->lastMousePos = e->pos();
 		w->clear();
 
-		// 2. Подготавливаем данные
 		int algType = ui->comboBoxLineAlg->currentIndex();
 		QVector<QPoint> originalPoints = w->getPolygonPoints();
-		auto& pts = w->getPolygonPoints(); // Ссылка на текущие точки
+		auto& pts = w->getPolygonPoints();
 
-		// 3. ПРОВЕРКА НА КРИВЫЕ (Если нажата кнопка)
+		// --- ЧАСТЬ ДЛЯ КРИВЫХ ---
 		if (ui->pushButtonKrivka->isChecked()) {
 			int curveIdx = ui->comboBoxKrivky->currentIndex();
 
@@ -209,41 +209,86 @@ void ImageViewer::ViewerWidgetMouseMove(ViewerWidget* w, QEvent* event)
 			else if (curveIdx == 1) w->drawBezierDeCasteljau(pts, globalColor);
 			else if (curveIdx == 2) w->drawCoonsBSpline(pts, globalColor);
 
-			// Каркас
+			// Каркас и точки для кривых
 			for (int i = 0; i < (int)pts.size() - 1; ++i) {
 				w->drawLine(pts[i], pts[i + 1], Qt::lightGray, 0, 0);
 			}
 			for (const QPoint& p : pts) {
-				w->drawCircle(p, 3, Qt::red); // Красные точки-узлы
+				w->drawCircle(p, 3, Qt::red);
 			}
+
 			w->update();
-			return; // Важно: выходим, чтобы не рисовать обычные линии!
+			return; // Для кривых клиппинг и заливка не нужны, выходим
 		}
 
-		// 4. ПРОВЕРКА НА КЛИППИНГ (Только для обычных линий)
+		// --- КЛИППИНГ ---
 		if (ui->pushButtonClip->isChecked()) {
 			int margin = 20;
-			if (originalPoints.size() == 2)
-				w->clipLineCyrusBeck(margin, margin, w->width() - margin, w->height() - margin, algType, globalColor);
-			else if (originalPoints.size() > 2)
-				w->clipPolygonSH(margin, margin, w->width() - margin, w->height() - margin, algType, globalColor);
-		}
+			int xMin = margin;
+			int yMin = margin;
+			int xMax = w->width() - margin;
+			int yMax = w->height() - margin;
 
-		// 5. ОБЫЧНОЕ РИСОВАНИЕ (Если не сработал return выше)
-		if (algType == 2) { // Круг
-			float r = sqrt(pow(pts[1].x() - pts[0].x(), 2) + pow(pts[1].y() - pts[0].y(), 2));
-			w->drawCircle(pts[0], r, globalColor);
-		}
-		else {
-			for (size_t i = 0; i < pts.size() - 1; ++i) {
-				w->drawLine(pts[i], pts[i + 1], globalColor, 0, algType);
+			// Вызываем отсечение (без рисования красной рамки)
+			if (originalPoints.size() == 2) {
+				w->clipLineCyrusBeck(xMin, yMin, xMax, yMax, algType, globalColor);
 			}
-			if (pts.size() > 2) {
-				w->drawLine(pts.back(), pts.front(), globalColor, 0, algType);
+			else if (originalPoints.size() > 2) {
+				w->clipPolygonSH(xMin, yMin, xMax, yMax, algType, globalColor);
 			}
 		}
 
-		w->getPolygonPoints() = originalPoints;
+		// --- ОБЫЧНОЕ РИСОВАНИЕ И ЗАПОЛНЕНИЕ ---
+		
+
+		if (!pts.isEmpty()) {
+			if (algType == 2) { // Если выбран круг (Брезенхем)
+				float r = sqrt(pow(pts[1].x() - pts[0].x(), 2) + pow(pts[1].y() - pts[0].y(), 2));
+				w->drawCircle(pts[0], r, globalColor);
+			}
+			else {
+				bool fillIsOn = ui->pushButtonFill->isChecked();
+				if (fillIsOn && !pts.isEmpty()) {
+					if (pts.size() == 3) {
+						// Выбираем режим из комбобокса: 0 - Ближайший, 1 - Интерполяция
+						bool useBary = (ui->comboBoxInterpolation->currentIndex() == 1);
+
+						// ВАЖНО: передаем pts[0], pts[1], pts[2] (обрезанные точки)
+						// И передаем РАЗНЫЕ цвета, иначе Nearest Neighbor и Интерполяция выглядят одинаково
+						w->fillTriangle(pts[0], pts[1], pts[2],
+							Qt::blue, Qt::red, Qt::green,
+							useBary);
+					}
+					else if (pts.size() > 3) {
+						// Если после клиппинга точек больше 3, используем обычный сканлайн
+						w->fillPolygonScanLine(globalColor);
+					}
+				}
+
+				// 3. ВСЕГДА рисуем контур (линии), чтобы фигура была четкой
+				for (size_t i = 0; i < pts.size() - 1; ++i) {
+					w->drawLine(pts[i], pts[i + 1], globalColor, 0, algType);
+				}
+				if (pts.size() > 2) {
+					w->drawLine(pts.back(), pts.front(), globalColor, 0, algType);
+				}
+			}
+		}
+
+		// --- БЛОК КРИВЫХ  ---
+		if (ui->pushButtonKrivka->isChecked()) {
+			int curveIdx = ui->comboBoxKrivky->currentIndex();
+			if (curveIdx == 0) w->drawFerguson(originalPoints, globalColor);
+			else if (curveIdx == 1) w->drawBezierDeCasteljau(originalPoints, globalColor);
+			else if (curveIdx == 2) w->drawCoonsBSpline(originalPoints, globalColor);
+
+			// Для кривых рисуем только каркас и выходим
+			for (int i = 0; i < (int)originalPoints.size() - 1; ++i) {
+				w->drawLine(originalPoints[i], originalPoints[i + 1], Qt::lightGray, 0, 0);
+			}
+		}
+
+		w->getPolygonPoints() = originalPoints; // Возвращаем целые точки
 		w->update();
 	}
 }
