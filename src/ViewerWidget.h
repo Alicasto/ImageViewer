@@ -71,7 +71,7 @@ public:
 	
 	struct Point3D{ double x, y, z; };
 	struct Cube{ QVector<Point3D> points; //->vsetky vrcholy
-				QVector<int> edges; //-> indexy pre hrany};
+				QVector<int> edges; }; //-> indexy pre hrany
 public slots:
 	void paintEvent(QPaintEvent* event) Q_DECL_OVERRIDE;
 };
