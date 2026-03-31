@@ -6,7 +6,7 @@ class ViewerWidget :public QWidget {
 private:
 	QSize areaSize = QSize(0, 0);
 	QImage* img = nullptr;
-	uchar* data = nullptr; //смерник на даты которые уложены в QImage, для быстрого доступа к пикселям
+	uchar* data = nullptr; //Г±Г¬ГҐГ°Г­ГЁГЄ Г­Г  Г¤Г ГІГ» ГЄГ®ГІГ®Г°Г»ГҐ ГіГ«Г®Г¦ГҐГ­Г» Гў QImage, Г¤Г«Гї ГЎГ»Г±ГІГ°Г®ГЈГ® Г¤Г®Г±ГІГіГЇГ  ГЄ ГЇГЁГЄГ±ГҐГ«ГїГ¬
 
 	bool drawLineActivated = false;
 	QPoint drawLineBegin = QPoint(0, 0);
@@ -19,14 +19,14 @@ public:
 
 	//Image functions
 	bool setImage(const QImage& inputImg);
-	QImage* getImage() { return img; }; //для рисования на виджете
+	QImage* getImage() { return img; }; //Г¤Г«Гї Г°ГЁГ±Г®ГўГ Г­ГЁГї Г­Г  ГўГЁГ¤Г¦ГҐГІГҐ
 	bool isEmpty();
 	bool changeSize(int width, int height);
 
 	void setPixel(int x, int y, int r, int g, int b, int a = 255);
 	void setPixel(int x, int y, double valR, double valG, double valB, double valA = 1.);
 	void setPixel(int x, int y, const QColor& color);
-	bool isInside(int x, int y); //Проверка на вхождение координат в границы изображения
+	bool isInside(int x, int y); //ГЏГ°Г®ГўГҐГ°ГЄГ  Г­Г  ГўГµГ®Г¦Г¤ГҐГ­ГЁГҐ ГЄГ®Г®Г°Г¤ГЁГ­Г ГІ Гў ГЈГ°Г Г­ГЁГ¶Г» ГЁГ§Г®ГЎГ°Г Г¦ГҐГ­ГЁГї
 
 	//Draw functions
 	void drawLine(QPoint start, QPoint end, QColor color, float radius, int algType = 0);
