@@ -232,6 +232,9 @@ void ImageViewer::ViewerWidgetMouseMove(ViewerWidget* w, QEvent* event)
 			// Вызываем отсечение (без рисования красной рамки)
 			if (originalPoints.size() == 2) {
 				w->clipLineCyrusBeck(xMin, yMin, xMax, yMax, algType, globalColor);
+				w->getPolygonPoints() = originalPoints;
+				w->update();
+				return;
 			}
 			else if (originalPoints.size() > 2) {
 				w->clipPolygonSH(xMin, yMin, xMax, yMax, algType, globalColor);
@@ -253,7 +256,7 @@ void ImageViewer::ViewerWidgetMouseMove(ViewerWidget* w, QEvent* event)
 						// Выбираем режим из комбобокса: 0 - Ближайший, 1 - Интерполяция
 						bool useBary = (ui->comboBoxInterpolation->currentIndex() == 1);
 
-						// ВАЖНО: передаем pts[0], pts[1], pts[2] (обрезанные точки)
+						
 						// И передаем РАЗНЫЕ цвета, иначе Nearest Neighbor и Интерполяция выглядят одинаково
 						w->fillTriangle(pts[0], pts[1], pts[2],
 							Qt::blue, Qt::red, Qt::green,

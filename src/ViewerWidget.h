@@ -68,7 +68,16 @@ public:
 	void drawFerguson(const QVector<QPoint>& pts, QColor color);
 	void drawBezierDeCasteljau(const QVector<QPoint>& pts, QColor color);
 	void drawCoonsBSpline(const QVector<QPoint>& pts, QColor color);
-	
+
+	//3D part
+	struct Point3D {
+		double x, y, z;
+	};
+	struct Cube {
+		QVector<Point3D> points; //->vsetky vrcholy
+		QVector<int> edges;//-> indexy pre hrany
+	};
+	void drawCube(const Cube& cube, double angleX, double angleY, double angleZ, QColor color);
 
 public slots:
 	void paintEvent(QPaintEvent* event) Q_DECL_OVERRIDE;

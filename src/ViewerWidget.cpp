@@ -459,7 +459,7 @@ double dot(QPoint a, QPoint b) {
 QPoint ViewerWidget::getIntersection(QPoint S, QPoint V, int edge, int limit)
 {
 	double t;
-	if (edge == 0 || edge == 1) { // Левая/Правая границы
+	if (edge == 0 || edge == 1) { // Левая or Правая границы
 		t = (double)(limit - S.x()) / (V.x() - S.x());
 		return QPoint(limit, S.y() + t * (V.y() - S.y()));
 	}
@@ -471,47 +471,47 @@ QPoint ViewerWidget::getIntersection(QPoint S, QPoint V, int edge, int limit)
 
 void ViewerWidget::clipLineCyrusBeck(int xMin, int yMin, int xMax, int yMax, int algType, QColor color)
 {
-	if (polygonPoints.size() != 2) return;
+	if (polygonPoints.size() < 2) return;
 
 	QPoint P1 = polygonPoints[0];
 	QPoint P2 = polygonPoints[1];
-	QPoint D = P2 - P1;
+	QPoint D = P2 - P1;//направляющий вектор отрезка
 
 	double tMin = 0.0;
 	double tMax = 1.0;
 
 	QPoint n[4] = { QPoint(1,0), QPoint(-1,0), QPoint(0,1), QPoint(0,-1) };
-	QPoint b[4] = { QPoint(xMax, yMin), QPoint(xMin, yMin), QPoint(xMin, yMax), QPoint(xMin, yMin)};
+	QPoint b[4] = { QPoint(xMin, yMin), QPoint(xMax, yMin), QPoint(xMin, yMin), QPoint(xMin, yMax)};
 
 	for (int i = 0; i < 4; i++) {
-		double dn = dot(D, n[i]);
-		double wn = dot(P1 - b[i], n[i]);
+		double dn = dot(D, n[i]);// определвет как розташована линия
+		double wn = dot(P1 - b[i], n[i]);//положення точки або линии относительно текущей границы
 
 		if (dn != 0){
-			double t = -wn / dn;
+			double t = -wn / dn;//параметр пересечения
 			if(dn > 0){
-				tMin = max(tMin, t);
+				tMin = max(tMin, t);//нижняя граница допустимого интервала(точка входа)
 			}
 			else {
-				tMax = min(tMax, t);
+				tMax = min(tMax, t);//точка выхода из окна
 			}
 		}
 		else if (wn < 0) {
-			polygonPoints.clear();
+			polygonPoints.clear();//чтобы откинулось то что мимо плоскости
 			return;
 		}
 	}
 	if(tMin <= tMax){
-		polygonPoints[0] = QPoint(P1.x() + tMin * D.x(), P1.y() + tMin * D.y());
+		polygonPoints[0] = QPoint(P1.x() + tMin * D.x(), P1.y() + tMin * D.y());//точка входа + точка выхода
 		polygonPoints[1] = QPoint(P1.x() + tMax * D.x(), P1.y() + tMax * D.y());
 		img->fill(Qt::white);
 		drawCurrentObject(color, algType);
 	}
 	else {
 		polygonPoints.clear();
-		//img->fill(Qt::white);
+		img->fill(Qt::white);
 	}
-	//update();
+	update();
 }
 
 void ViewerWidget::clipPolygonSH(int xMin, int yMin, int xMax, int yMax, int algType, QColor color)
@@ -522,17 +522,17 @@ void ViewerWidget::clipPolygonSH(int xMin, int yMin, int xMax, int yMax, int alg
 	int limits[4] = { xMin, xMax, yMin, yMax };
 
 	for (int edge = 0; edge < 4; edge++){
-		QVector<QPoint> output;
-		if (input.isEmpty()) break;
+		QVector<QPoint> output;//записываются точки после отсечения конкретной границы
+		if (input.isEmpty()) break;//если ничего не осталось
 		QPoint S = input.last();
 
 		for (const QPoint& V : input) {
 			bool vIn, sIn;
 			// Проверка "внутри" ли точки относительно текущей границы (edge)
-			if (edge == 0) { vIn = V.x() >= limits[0]; sIn = S.x() >= limits[0]; }
-			else if (edge == 1) { vIn = V.x() <= limits[1]; sIn = S.x() <= limits[1]; }
-			else if (edge == 2) { vIn = V.y() >= limits[2]; sIn = S.y() >= limits[2]; }
-			else { vIn = V.y() <= limits[3]; sIn = S.y() <= limits[3]; }
+			if (edge == 0) { vIn = V.x() >= limits[0]; sIn = S.x() >= limits[0]; }//внутри если х>=xMin ->left
+			else if (edge == 1) { vIn = V.x() <= limits[1]; sIn = S.x() <= limits[1]; }//x<=xMax  ->right
+			else if (edge == 2) { vIn = V.y() >= limits[2]; sIn = S.y() >= limits[2]; }//up
+			else { vIn = V.y() <= limits[3]; sIn = S.y() <= limits[3]; }//down
 
 			if (vIn) {
 				if (!sIn) output.push_back(getIntersection(S, V, edge, limits[edge]));
@@ -564,13 +564,13 @@ void ViewerWidget::fillPolygonScanLine(QColor color)
 
 	for (int y = yMin; y <= yMax; y++) {
 		
-		QVector<int> xIntersections;
+		QVector<int> xIntersections;//все x, в которых текущая горизонтальная строка пересекает рёбра многоугольника.
 		
 		for (int i = 0; i < polygonPoints.size(); i++) {
 			QPoint p1 = polygonPoints[i];
 			QPoint p2 = polygonPoints[(i + 1) % polygonPoints.size()];
 			
-			if ((p1.y() <= y && p2.y() > y) || (p1.y() > y && p2.y() <= y)) {
+			if ((p1.y() <= y && p2.y() > y) || (p1.y() > y && p2.y() <= y)) {//proverajet lezat li po raznie strany
 				
 				double x = p1.x() + (double)(y - p1.y()) * (p2.x() - p1.x()) / (p2.y() - p1.y());
 				xIntersections.push_back(static_cast<int>(round(x)));
@@ -648,14 +648,14 @@ void ViewerWidget::drawFerguson(const QVector<QPoint>& pts, QColor color)
 	drawLine(pts[0], pts[1], Qt::blue, 0, 0);//vektor z zacatku
 	drawLine(pts[3], pts[2], Qt::blue, 0, 0);//vektor v konce
 
-	QPoint p0 = pts[0];      
-	QPoint p1 = pts[3];      
-	QPoint v0 = pts[1] - pts[0]; 
+	QPoint p0 = pts[0];  //zaciatok    
+	QPoint p1 = pts[3];  //konec    
+	QPoint v0 = pts[1] - pts[0]; //p1 a p2 vektor naapriamku
 	QPoint v1 = pts[2] - pts[3]; 
 
 	QPoint prev = p0;
 	
-	for (double t = 0; t <= 1.001; t += 0.01) {
+	for (double t = 0; t <= 1.001; t += 0.01) {//0.01 krok
 		double t2 = t * t;
 		double t3 = t2 * t;
 		
@@ -701,18 +701,26 @@ void ViewerWidget::drawCoonsBSpline(const QVector<QPoint>& pts, QColor color)
 	for (int i = 1; i < pts.size() - 2; ++i) {
 		QPoint p0 = pts[i - 1], p1 = pts[i], p2 = pts[i + 1], p3 = pts[i + 2], prev_q;
 		for (double t = 0; t <= 1.001; t += 0.02) {
+			
 			double t2 = t * t;
 			double t3 = t2 * t;
+			
 			double a0 = (-t3 + 3 * t2 - 3 * t + 1) / 6.0;
 			double a1 = (3 * t3 - 6 * t2 + 4) / 6.0;
 			double a2 = (-3 * t3 + 3 * t2 + 3 * t + 1) / 6.0;
 			double a3 = t3 / 6.0;
+			
 			QPoint curr(round(a0 * p0.x() + a1 * p1.x() + a2 * p2.x() + a3 * p3.x()),
 				round(a0 * p0.y() + a1 * p1.y() + a2 * p2.y() + a3 * p3.y()));
 			if (t > 0) drawLine(prev_q, curr, color, 0, 0);
 			prev_q = curr;
 		}
 	}
+}
+
+void ViewerWidget::drawCube(const Cube& cube, double angleX, double angleY, double angleZ, QColor color)
+{
+
 }
 
 
