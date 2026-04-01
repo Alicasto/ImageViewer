@@ -719,10 +719,31 @@ void ViewerWidget::drawCoonsBSpline(const QVector<QPoint>& pts, QColor color)
 }
 
 
-ViewerWidget::Cube ViewerWidget::creatCube(double x)
+ViewerWidget::Cube ViewerWidget::creatCube(double k)
 {
 	Cube cube;
+
+	cube.points = {
+		{0,0,0},//0 down
+		{0,0,k},//1 d
+		{k,0,k},//2 d
+		{k,0,0},//3 d
+		{k,k,0},//4 up
+		{0,k,0},//5 u
+		{0,k,k},//6 u
+		{k,k,k}//7 u
+	};
+	cube.triangles = {
+		{0,5,3},{5,4,3},//front
+		{3,4,2},{4,7,2},//prava hran
+		{5,6,4},{6,7,4},//horna hran
+		{1,6,0},{6,5,0},//lava hran
+		{0,3,2},{2,1,0},//dolna hran
+		{2,7,1},{7,6,1}//zad
+	};
+
 	return cube;
+	
 }
 
 void ViewerWidget::drawCube(const Cube& cube, double angleX, double angleY, double angleZ, QColor color)

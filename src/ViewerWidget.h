@@ -84,7 +84,7 @@ public:
 		QVector<Triangle> triangles;
 	};
 
-	Cube creatCube(double x);
+	Cube creatCube(double k);
 	void drawCube(const Cube& cube, double angleX, double angleY, double angleZ, QColor color);
 
 public slots:
