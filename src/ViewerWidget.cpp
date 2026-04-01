@@ -751,6 +751,28 @@ void ViewerWidget::drawCube(const Cube& cube, double angleX, double angleY, doub
 	
 }
 
+void ViewerWidget::saveCubeToVTK(const Cube& cube, const QString filename)
+{
+	QFile file(filename);
+	if (!file.open(QIODevice::WriteOnly | QIODevice::Text)) {
+		return;
+	}
+	QTextStream out(&file);
+	out << "# vtk DataFile Version 3.0\n";
+	out << "vtk output\n";
+	out << "ASCII\n";
+	out << "DATASET POLYDATA\n";
+	out << "POINTS " << cube.points.size() << "int\n";
+	for (const Point3D& p : cube.points) {
+		out << p.x << " " << p.y << " " << p.z << "\n";
+	}
+	out << "POLYGONS " << cube.triangles.size() << " " << cube.triangles.size() * 4 << "\n";
+	for (const Triangle& t : cube.triangles) {
+		out << "3 " << t.a << " " << t.b << " " << t.c << "\n";
+	}
+	file.close();
+}
+
 
 //Slots
 void ViewerWidget::paintEvent(QPaintEvent* event)

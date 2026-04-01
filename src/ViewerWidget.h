@@ -87,6 +87,8 @@ public:
 	Cube creatCube(double k);
 	void drawCube(const Cube& cube, double angleX, double angleY, double angleZ, QColor color);
 
+	void saveCubeToVTK(const Cube& cube, const QString filename);
+
 public slots:
 	void paintEvent(QPaintEvent* event) Q_DECL_OVERRIDE;
 };
