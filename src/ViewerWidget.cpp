@@ -718,9 +718,16 @@ void ViewerWidget::drawCoonsBSpline(const QVector<QPoint>& pts, QColor color)
 	}
 }
 
+
+ViewerWidget::Cube ViewerWidget::creatCube(double x)
+{
+	Cube cube;
+	return cube;
+}
+
 void ViewerWidget::drawCube(const Cube& cube, double angleX, double angleY, double angleZ, QColor color)
 {
-
+	
 }
 
 

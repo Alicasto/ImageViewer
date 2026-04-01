@@ -6,7 +6,7 @@ class ViewerWidget :public QWidget {
 private:
 	QSize areaSize = QSize(0, 0);
 	QImage* img = nullptr;
-	uchar* data = nullptr; //ñìåðíèê íà äàòû êîòîðûå óëîæåíû â QImage, äëÿ áûñòðîãî äîñòóïà ê ïèêñåëÿì
+	uchar* data = nullptr; 
 
 	bool drawLineActivated = false;
 	QPoint drawLineBegin = QPoint(0, 0);
@@ -19,14 +19,14 @@ public:
 
 	//Image functions
 	bool setImage(const QImage& inputImg);
-	QImage* getImage() { return img; }; //äëÿ ðèñîâàíèÿ íà âèäæåòå
+	QImage* getImage() { return img; }; 
 	bool isEmpty();
 	bool changeSize(int width, int height);
 
 	void setPixel(int x, int y, int r, int g, int b, int a = 255);
 	void setPixel(int x, int y, double valR, double valG, double valB, double valA = 1.);
 	void setPixel(int x, int y, const QColor& color);
-	bool isInside(int x, int y); //Ïðîâåðêà íà âõîæäåíèå êîîðäèíàò â ãðàíèöû èçîáðàæåíèÿ
+	bool isInside(int x, int y); 
 
 	//Draw functions
 	void drawLine(QPoint start, QPoint end, QColor color, float radius, int algType = 0);
@@ -69,14 +69,22 @@ public:
 	void drawBezierDeCasteljau(const QVector<QPoint>& pts, QColor color);
 	void drawCoonsBSpline(const QVector<QPoint>& pts, QColor color);
 
+
 	//3D part
 	struct Point3D {
 		double x, y, z;
 	};
+
+	struct Triangle {
+		int a, b, c;
+	};
+
 	struct Cube {
 		QVector<Point3D> points; //->vsetky vrcholy
-		QVector<int> edges;//-> indexy pre hrany
+		QVector<Triangle> triangles;
 	};
+
+	Cube creatCube(double x);
 	void drawCube(const Cube& cube, double angleX, double angleY, double angleZ, QColor color);
 
 public slots:
