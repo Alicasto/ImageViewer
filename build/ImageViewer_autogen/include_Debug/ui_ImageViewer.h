@@ -18,6 +18,7 @@
 #include <QtWidgets/QDoubleSpinBox>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QGroupBox>
+#include <QtWidgets/QLineEdit>
 #include <QtWidgets/QMainWindow>
 #include <QtWidgets/QMenu>
 #include <QtWidgets/QMenuBar>
@@ -76,6 +77,8 @@ public:
     QSpacerItem *verticalSpacer;
     QComboBox *comboBoxKrivky;
     QPushButton *pushButtonKrivka;
+    QPushButton *pushButtonCube;
+    QLineEdit *lineEditC;
     QButtonGroup *buttonGroup;
 
     void setupUi(QMainWindow *ImageViewerClass)
@@ -104,7 +107,7 @@ public:
         scrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName("scrollAreaWidgetContents");
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 516, 566));
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 488, 566));
         scrollArea->setWidget(scrollAreaWidgetContents);
 
         verticalLayout->addWidget(scrollArea);
@@ -268,6 +271,16 @@ public:
 
         gridLayout_4->addWidget(pushButtonKrivka, 8, 0, 1, 1);
 
+        pushButtonCube = new QPushButton(groupBox_2);
+        pushButtonCube->setObjectName("pushButtonCube");
+
+        gridLayout_4->addWidget(pushButtonCube, 9, 0, 1, 1);
+
+        lineEditC = new QLineEdit(groupBox_2);
+        lineEditC->setObjectName("lineEditC");
+
+        gridLayout_4->addWidget(lineEditC, 9, 1, 1, 1);
+
 
         gridLayout_2->addWidget(groupBox_2, 1, 0, 1, 1);
 
@@ -331,6 +344,7 @@ public:
         comboBoxKrivky->setItemText(2, QCoreApplication::translate("ImageViewerClass", "Coons B Spline", nullptr));
 
         pushButtonKrivka->setText(QCoreApplication::translate("ImageViewerClass", "Curve", nullptr));
+        pushButtonCube->setText(QCoreApplication::translate("ImageViewerClass", "Cube", nullptr));
     } // retranslateUi
 
 };

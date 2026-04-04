@@ -25,7 +25,7 @@
         <rect>
          <x>0</x>
          <y>0</y>
-         <width>516</width>
+         <width>488</width>
          <height>566</height>
         </rect>
        </property>
@@ -300,6 +300,16 @@
            <bool>true</bool>
           </property>
          </widget>
+        </item>
+        <item row="9" column="0">
+         <widget class="QPushButton" name="pushButtonCube">
+          <property name="text">
+           <string>Cube</string>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="1">
+         <widget class="QLineEdit" name="lineEditC"/>
         </item>
        </layout>
       </widget>

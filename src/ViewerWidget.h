@@ -12,6 +12,7 @@ private:
 	QPoint drawLineBegin = QPoint(0, 0);
 	QVector <QPoint> polygonPoints;
 
+
 public:
 	ViewerWidget(QSize imgSize, QWidget* parent = Q_NULLPTR);
 	~ViewerWidget();
@@ -87,7 +88,12 @@ public:
 	Cube creatCube(double k);
 	void drawCube(const Cube& cube, double angleX, double angleY, double angleZ, QColor color);
 
-	void saveCubeToVTK(const Cube& cube, const QString filename);
+	void saveCubeToVTK(const Cube& cube, const QString& filename);
+	void setCube3D(double k);
+	void saveCurrentCubeToVTK(const QString& filename);
+
+	Cube currentCube;
+	bool hasCube3D = false;
 
 public slots:
 	void paintEvent(QPaintEvent* event) Q_DECL_OVERRIDE;
