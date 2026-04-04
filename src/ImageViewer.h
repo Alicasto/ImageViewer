@@ -52,4 +52,6 @@ private slots:
 	void on_pushButtonReflectX_clicked();
 	void on_pushButtonReflectY_clicked();
 	void on_pushButtonShear_clicked();
+
+	void on_pushButtonCube_clicked();
 };

@@ -797,4 +797,8 @@ void ViewerWidget::paintEvent(QPaintEvent* event)
 
 	QRect area = event->rect();
 	painter.drawImage(area, *img, area);
+
+	if (hasCube3D) {
+		drawCube(currentCube, 0, 0, 0, Qt::black);
+	}
 }

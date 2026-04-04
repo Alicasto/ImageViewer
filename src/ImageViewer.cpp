@@ -471,3 +471,15 @@ void ImageViewer::on_pushButtonShear_clicked()
 		vW->shearX(k, globalColor, ui->comboBoxLineAlg->currentIndex());
 	}
 }
+
+void ImageViewer::on_pushButtonCube_clicked()
+{
+	bool ok;
+	double k = ui->lineEditC->text().toDouble(&ok);
+
+	if (!ok || k <= 0) {
+		return;
+	}
+	ViewerWidget::Cube cube = vW->creatCube(k);
+	vW->drawCube(cube, 0, 0, 0, Qt::black);
+}
