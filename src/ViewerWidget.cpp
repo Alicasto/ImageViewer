@@ -745,7 +745,35 @@ void ViewerWidget::creatCube(double k, Cube& cube)
 
 void ViewerWidget::drawCube(const Cube& cube, double angleX, double angleY, double angleZ, QColor color)
 {
-	
+	if (!img) {
+		return;
+	}
+	clear();
+
+	QVector<QPoint> point2D;
+
+	int centX = width() / 2;
+	int centY = height() / 2;
+
+	double d = 0.5;
+
+	for (const Point3D& p : cube.points) {
+		int x = static_cast<int>(round(centX + p.x + d * p.z));
+		int y = static_cast<int>(round(centY - p.y - d * p.z));
+
+		point2D.push_back(QPoint(x, y));
+	}
+
+	for (const Triangle& t : cube.triangles) {
+		QPoint A = point2D[t.a];
+		QPoint B = point2D[t.b];
+		QPoint C = point2D[t.c];
+
+		drawLineBresenham(A, B, color);
+		drawLineBresenham(B, C, color);
+		drawLineBresenham(C, A, color);
+	}
+	update();
 }
 
 void ViewerWidget::saveCubeToVTK(const Cube& cube, const QString& filename)

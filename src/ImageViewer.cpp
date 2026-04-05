@@ -485,4 +485,5 @@ void ImageViewer::on_pushButtonCube_clicked()
 	double k = ui->lineEditC->text().toDouble();
 
 	vW->setCube3D(k);
+	vW->drawCube(vW->currentCube, 0, 0, 0, Qt::black);
 }
