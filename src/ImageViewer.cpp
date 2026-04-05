@@ -383,7 +383,7 @@ void ImageViewer::on_actionSave_as_triggered()
 {
 	QString folder = settings.value("folder_img_save_path", "").toString();
 
-	QString fileFilter = "Image data (*.bmp *.gif *.jpg *.jpeg *.png *.pbm *.pgm *.ppm *.xbm *.xpm);;All files (*)";
+	QString fileFilter = "Image data (*.bmp *.gif *.jpg *.jpeg *.png *.pbm *.pgm *.ppm *.xbm *.xpm);;VTK files (*.vtk);;All files (*)";
 	QString fileName = QFileDialog::getSaveFileName(this, "Save image", folder, fileFilter);
 	if (!fileName.isEmpty()) {
 		QFileInfo fi(fileName);
