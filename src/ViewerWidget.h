@@ -85,7 +85,7 @@ public:
 		QVector<Triangle> triangles;
 	};
 
-	Cube creatCube(double k);
+	void creatCube(double k, Cube& cube);
 	void drawCube(const Cube& cube, double angleX, double angleY, double angleZ, QColor color);
 
 	void saveCubeToVTK(const Cube& cube, const QString& filename);

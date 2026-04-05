@@ -719,9 +719,8 @@ void ViewerWidget::drawCoonsBSpline(const QVector<QPoint>& pts, QColor color)
 }
 
 
-ViewerWidget::Cube ViewerWidget::creatCube(double k)
+void ViewerWidget::creatCube(double k, Cube& cube)
 {
-	Cube cube;
 
 	cube.points = {
 		{0,0,0},//0 down
@@ -741,8 +740,6 @@ ViewerWidget::Cube ViewerWidget::creatCube(double k)
 		{0,3,2},{2,1,0},//dolna hran
 		{2,7,1},{7,6,1}//zad
 	};
-
-	return cube;
 	
 }
 
@@ -775,7 +772,7 @@ void ViewerWidget::saveCubeToVTK(const Cube& cube, const QString& filename)
 
 void ViewerWidget::setCube3D(double k)
 {
-	currentCube = creatCube(k);
+	creatCube(k, currentCube);
 	hasCube3D = true;
 	update();
 }

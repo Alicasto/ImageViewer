@@ -389,15 +389,23 @@ void ImageViewer::on_actionSave_as_triggered()
 		QFileInfo fi(fileName);
 		settings.setValue("folder_img_save_path", fi.absoluteDir().absolutePath());
 
-		if (!saveImage(fileName)) {
-			msgBox.setText("Unable to save image.");
-			msgBox.setIcon(QMessageBox::Warning);
-		}
-		else {
-			msgBox.setText(QString("File %1 saved.").arg(fileName));
+		if (fi.suffix().toLower() == "vtk") {
+			vW->saveCurrentCubeToVTK(fileName);
+
+			msgBox.setText(QString("VTK file %1 saved.").arg(fileName));
 			msgBox.setIcon(QMessageBox::Information);
 		}
-		msgBox.exec();
+		else {
+			if (!saveImage(fileName)) {
+				msgBox.setText("Unable to save image.");
+				msgBox.setIcon(QMessageBox::Warning);
+			}
+			else {
+				msgBox.setText(QString("File %1 saved.").arg(fileName));
+				msgBox.setIcon(QMessageBox::Information);
+			}
+		}
+		
 	}
 }
 void ImageViewer::on_actionClear_triggered()
@@ -474,12 +482,7 @@ void ImageViewer::on_pushButtonShear_clicked()
 
 void ImageViewer::on_pushButtonCube_clicked()
 {
-	bool ok;
-	double k = ui->lineEditC->text().toDouble(&ok);
+	double k = ui->lineEditC->text().toDouble();
 
-	if (!ok || k <= 0) {
-		return;
-	}
-	ViewerWidget::Cube cube = vW->creatCube(k);
-	vW->drawCube(cube, 0, 0, 0, Qt::black);
+	vW->setCube3D(k);
 }
