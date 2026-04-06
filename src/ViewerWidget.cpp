@@ -816,6 +816,52 @@ void ViewerWidget::saveCurrentCubeToVTK(const QString& filename)
 	saveCubeToVTK(currentCube, filename);
 }
 
+bool ViewerWidget::loadCubeFromVTK(const QString& filename)
+{
+	QFile file(filename);
+	if (!file.open(QIODevice::ReadOnly | QIODevice::Text)) {
+		return false;
+	}
+	QTextStream in(&file);
+	Cube cube;
+
+	while (!in.atEnd()) {
+		QString word;//pre zapis stringov z suboru
+		in >> word;
+
+		if (word == "POINTS") {
+			int n;
+			QString type;
+			in >> n >> type;
+
+			for (int i = 0; i < n; i++) {
+				Point3D p;
+				in >> p.x >> p.y >> p.z;
+				cube.points.push_back(p);
+			}
+		}
+		if (word == "POLYGONS") {
+			int n, total;
+			in >> n >> total;
+
+			for (int i = 0; i < n; i++) {
+				int count;
+				Triangle t;
+				in >> count >> t.a >> t.b >> t.c;
+				cube.triangles.push_back(t);
+			}
+		}
+	}
+	file.close();
+	
+	currentCube = cube;
+	hasCube3D = true;
+	update();
+	
+	return true;
+
+}
+
 
 //Slots
 void ViewerWidget::paintEvent(QPaintEvent* event)

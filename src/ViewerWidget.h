@@ -91,7 +91,8 @@ public:
 	void saveCubeToVTK(const Cube& cube, const QString& filename);
 	void setCube3D(double k);
 	void saveCurrentCubeToVTK(const QString& filename);
-
+	bool loadCubeFromVTK(const QString& filename);
+	
 	Cube currentCube;
 	bool hasCube3D = false;
 

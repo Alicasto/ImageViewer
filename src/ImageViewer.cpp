@@ -366,7 +366,7 @@ void ImageViewer::on_actionOpen_triggered()
 {
 	QString folder = settings.value("folder_img_load_path", "").toString();//записывает это в regedit там папка появляется
 
-	QString fileFilter = "Image data (*.bmp *.gif *.jpg *.jpeg *.png *.pbm *.pgm *.ppm *.xbm *.xpm);;All files (*)";
+	QString fileFilter = "Image data (*.bmp *.gif *.jpg *.jpeg *.png *.pbm *.pgm *.ppm *.xbm *.xpm);;VTK files (*.vtk);;All files (*)";
 	QString fileName = QFileDialog::getOpenFileName(this, "Load image", folder, fileFilter);
 	if (fileName.isEmpty()) { return; }
 
