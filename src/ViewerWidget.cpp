@@ -733,17 +733,17 @@ void ViewerWidget::creatCube(double k, Cube& cube)
 		{k,k,k}//7 u
 	};
 	cube.triangles = {
-		{0,5,3},{5,4,3},//front
-		{3,4,2},{4,7,2},//prava hran
-		{5,6,4},{6,7,4},//horna hran
-		{1,6,0},{6,5,0},//lava hran
-		{0,3,2},{2,1,0},//dolna hran
-		{2,7,1},{7,6,1}//zad
+		{3,0,5},{5,4,3},//front
+		{2,3,4},{4,7,2},//prava hran
+		{4,5,6},{6,7,4},//horna hran
+		{0,1,6},{6,5,0},//lava hran
+		{3,0,1},{1,2,3},//dolna hran
+		{1,2,7},{7,6,1}//zad
 	};
 	
 }
 
-void ViewerWidget::drawCube(const Cube& cube, double angleX, double angleY, double angleZ, QColor color)
+void ViewerWidget::drawCube(const Cube& cube, QColor color)
 {
 	if (!img) {
 		return;
@@ -764,14 +764,17 @@ void ViewerWidget::drawCube(const Cube& cube, double angleX, double angleY, doub
 		point2D.push_back(QPoint(x, y));
 	}
 
+	QColor diagonal = Qt::lightGray;
+	QColor edge = Qt::blue;
+	
 	for (const Triangle& t : cube.triangles) {
 		QPoint A = point2D[t.a];
 		QPoint B = point2D[t.b];
 		QPoint C = point2D[t.c];
 
-		drawLineBresenham(A, B, color);
-		drawLineBresenham(B, C, color);
-		drawLineBresenham(C, A, color);
+		drawLineBresenham(A, B, edge);
+		drawLineBresenham(B, C, edge);
+		drawLineBresenham(C, A, diagonal);
 	}
 	update();
 }
@@ -824,6 +827,6 @@ void ViewerWidget::paintEvent(QPaintEvent* event)
 	painter.drawImage(area, *img, area);
 
 	if (hasCube3D) {
-		drawCube(currentCube, 0, 0, 0, Qt::black);
+		drawCube(currentCube, Qt::black);
 	}
 }
