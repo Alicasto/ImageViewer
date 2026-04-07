@@ -756,7 +756,7 @@ void ViewerWidget::drawCube(const Cube& cube, QColor color)
 	int centX = width() / 2;
 	int centY = height() / 2;
 
-	double d = 0.5;
+	double d = 0.2;
 
 	for (const Point3D& p : cube.points) {
 		int x = static_cast<int>(round(centX + p.x + d * p.z));
