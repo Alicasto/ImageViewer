@@ -1,4 +1,6 @@
 #include "ImageViewer.h"
+#include <cmath>
+#include <QInputDialog>
 
 ImageViewer::ImageViewer(QWidget* parent)
 	: QMainWindow(parent), ui(new Ui::ImageViewerClass)
@@ -486,4 +488,28 @@ void ImageViewer::on_pushButtonCube_clicked()
 
 	vW->setCube3D(k);
 	vW->drawCube(vW->currentCube, Qt::black);
+}
+
+void ImageViewer::on_pushButtonSphere_clicked()
+{
+	bool ok1, ok2, ok3;
+
+	double radius = QInputDialog::getDouble(this, "UV Sphere", "Zadaj polomer sfery:", 50.0, 1.0, 1000.0, 2, &ok1);
+
+	if (!ok1) {
+		return;
+	}
+
+	int horiz = QInputDialog::getInt(this, "UV Sphere", "Zadaj pocet horizontalnych kruhov:", 5, 2, 100, 1, &ok2);
+
+	if (!ok2) {
+		return;
+	}
+
+	int vert = QInputDialog::getInt(this, "UV Sphere", "Zadaj pocet vertikalnych deleni:", 8, 3, 200, 1, &ok3);
+
+	if (!ok3) {
+		return;
+	}
+	vW->setSphere3D(radius, horiz, vert);
 }

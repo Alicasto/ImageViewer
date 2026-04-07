@@ -921,6 +921,13 @@ void ViewerWidget::creatSphereUV(double r, int vert, int horiz, Cube& sphere)
 	}
 }
 
+void ViewerWidget::setSphere3D(double r, int horiz, int vert)
+{
+	creatSphereUV(r, horiz, vert, currentCube);
+	hasCube3D = true;
+	update();
+}
+
 
 //Slots
 void ViewerWidget::paintEvent(QPaintEvent* event)

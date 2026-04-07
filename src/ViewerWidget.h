@@ -97,6 +97,7 @@ public:
 	bool hasCube3D = false;
 
 	void creatSphereUV(double r, int vert, int horiz, Cube& sphere);
+	void setSphere3D(double r, int horiz, int vert);
 
 public slots:
 	void paintEvent(QPaintEvent* event) Q_DECL_OVERRIDE;
