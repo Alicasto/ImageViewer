@@ -1,5 +1,6 @@
 #include "ViewerWidget.h"
 #include <algorithm>
+#include <cmath>
 using namespace std;
 ViewerWidget::ViewerWidget(QSize imgSize, QWidget* parent)
 	: QWidget(parent)
@@ -860,6 +861,64 @@ bool ViewerWidget::loadCubeFromVTK(const QString& filename)
 	
 	return true;
 
+}
+
+void ViewerWidget::creatSphereUV(double r, int vert, int horiz, Cube& sphere)
+{
+	sphere.points.clear();
+	sphere.triangles.clear();
+
+	sphere.points.push_back({ 0, r, 0 });
+	
+	for (int i = 0; i < horiz; i++) {
+		double theta = M_PI * i / horiz;
+
+		for (int j = 0; j < vert; j++) {
+			double phi = 2.0 * M_PI * j / vert;
+
+			Point3D p;
+			p.x = r * sin(theta) * cos(phi);
+			p.y = r * cos(theta);
+			p.z = r * sin(theta) * sin(phi);
+
+			sphere.points.push_back(p);
+		}
+	}
+	//bottom polus
+	sphere.points.push_back({ 0, -r, 0 });
+
+	int top = 0;
+	int bottom = sphere.points.size() - 1;
+
+	//up (triangles)
+	for (int j = 0; j < vert; j++) {
+		int a = 1 + j;
+		int b = 1 + (1 + j) % vert;
+
+		sphere.triangles.push_back({ top, b, a });
+	}
+	//middle part
+	for (int i = 0; i < horiz - 2; i++) {//lebo -2 polusi
+		for (int j = 0; j < vert; j++) {
+			int a = 1 + i * vert + j;
+			int b = 1 + i * vert + (j + 1) % vert;
+			int c = a + vert;
+			int d = b + vert;
+
+			sphere.triangles.push_back({ a, c, b });
+			sphere.triangles.push_back({ b, c, d });
+
+		}
+	}
+	//down (triangles)
+	int base = 1 + (horiz - 2) * vert;
+
+	for (int j = 0; j < vert; j++) {
+		int a = base + j;
+		int b = base + (j + 1) % vert;
+
+		sphere.triangles.push_back({ a, b, bottom });
+	}
 }
 
 
