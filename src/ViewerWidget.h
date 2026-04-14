@@ -102,6 +102,7 @@ public:
 	void setSphere3D(double r, int horiz, int vert);
 
 	double dot3D(const Point3D& a, const Point3D& b);
+	Point3D vect(const Point3D& a, const Point3D& b);
 	
 
 public slots:

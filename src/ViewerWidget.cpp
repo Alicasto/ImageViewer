@@ -960,6 +960,15 @@ double ViewerWidget::dot3D(const Point3D& a, const Point3D& b)//scalar
 	return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
+ViewerWidget::Point3D ViewerWidget::vect(const Point3D& a, const Point3D& b)
+{
+	return { a.y * b.z + a.z * b.y,
+		a.z * b.x - a.x * b.z,
+		a.x * b.y - a.y * b.x };
+
+	
+}
+
 
 //Slots
 void ViewerWidget::paintEvent(QPaintEvent* event)
