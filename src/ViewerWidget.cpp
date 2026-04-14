@@ -891,10 +891,10 @@ void ViewerWidget::creatSphereUV(double r, int vert, int horiz, Cube& sphere)
 	sphere.points.push_back({ 0, r, 0 });
 	
 	for (int i = 1; i <= parallels; ++i) {
-		double theta = M_PI * i / (parallels+1);
+		double theta = M_PI * i / (parallels + 1);
 
-		for (int j = 0; j < vert; j++) {
-			double phi = 2.0 * M_PI * j / vert;
+		for (int j = 0; j < meridians; ++j) {
+			double phi = 2.0 * M_PI * j / meridians;
 
 			Point3D p;
 			p.x = r * sin(theta) * cos(phi);
@@ -910,20 +910,28 @@ void ViewerWidget::creatSphereUV(double r, int vert, int horiz, Cube& sphere)
 	int top = 0;
 	int bottom = sphere.points.size() - 1;
 
-	//up (triangles)
-	for (int j = 0; j < vert; j++) {
-		int a = 1 + j;
-		int b = 1 + (1 + j) % vert;
+	const int firstRing = 1;
+	const int lastRing = 1 + (parallels - 1) * meridians;
 
-		sphere.triangles.push_back({ top, b, a });
+	//up (triangles)
+	for (int j = 0; j < meridians; ++j) {
+		int a = firstRing + j;
+		int b = firstRing + (1 + j) % meridians;
+
+		sphere.triangles.push_back({ top, a, b });
 	}
 	//middle part
-	for (int i = 0; i < horiz - 2; i++) {//lebo -2 polusi
-		for (int j = 0; j < vert; j++) {
-			int a = 1 + i * vert + j;
-			int b = 1 + i * vert + (j + 1) % vert;
-			int c = a + vert;
-			int d = b + vert;
+	for (int i = 0; i < parallels - 1; ++i ) {//lebo -2 polusi
+		
+		int ring00 = 1 + i * meridians;
+		int ring01 = ring00 + meridians;
+		
+		for (int j = 0; j < meridians; j++) {
+			
+			int a = ring00 + j;
+			int b = ring00 + (j + 1) % meridians;
+			int c = ring01 + j;
+			int d = ring01 + (j + 1) % meridians;
 
 			sphere.triangles.push_back({ a, c, b });
 			sphere.triangles.push_back({ b, c, d });
@@ -931,19 +939,18 @@ void ViewerWidget::creatSphereUV(double r, int vert, int horiz, Cube& sphere)
 		}
 	}
 	//down (triangles)
-	int base = 1 + (horiz - 2) * vert;
 
-	for (int j = 0; j < vert; j++) {
-		int a = base + j;
-		int b = base + (j + 1) % vert;
+	for (int j = 0; j < meridians; ++j) {
+		int a = lastRing + j;
+		int b = lastRing + (j + 1) % meridians;
 
-		sphere.triangles.push_back({ a, b, bottom });
+		sphere.triangles.push_back({ a, bottom, b });
 	}
 }
 
 void ViewerWidget::setSphere3D(double r, int horiz, int vert)
 {
-	creatSphereUV(r, horiz, vert, currentCube);
+	creatSphereUV(r, vert, horiz, currentCube);
 	hasCube3D = true;
 	update();
 }

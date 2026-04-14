@@ -423,6 +423,8 @@ void ImageViewer::on_actionSave_as_triggered()
 				msgBox.setIcon(QMessageBox::Information);
 			}
 		}
+
+		msgBox.exec();
 		
 	}
 }
