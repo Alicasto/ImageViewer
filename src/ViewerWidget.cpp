@@ -765,8 +765,8 @@ void ViewerWidget::drawCube(const Cube& cube, QColor color)
 		point2D.push_back(QPoint(x, y));
 	}
 
-	QColor diagonal = Qt::lightGray;
-	QColor edge = Qt::blue;
+	//QColor diagonal = Qt::lightGray;
+	QColor edge = Qt::black;
 	
 	for (const Triangle& t : cube.triangles) {
 		QPoint A = point2D[t.a];
@@ -775,7 +775,7 @@ void ViewerWidget::drawCube(const Cube& cube, QColor color)
 
 		drawLineBresenham(A, B, edge);
 		drawLineBresenham(B, C, edge);
-		drawLineBresenham(C, A, diagonal);
+		drawLineBresenham(C, A, edge);
 	}
 	update();
 }
@@ -953,6 +953,11 @@ void ViewerWidget::setSphere3D(double r, int horiz, int vert)
 	creatSphereUV(r, vert, horiz, currentCube);
 	hasCube3D = true;
 	update();
+}
+
+double ViewerWidget::dot3D(const Point3D& a, const Point3D& b)//scalar
+{
+	return a.x * b.x + a.y * b.y + a.z * b.z;
 }
 
 
