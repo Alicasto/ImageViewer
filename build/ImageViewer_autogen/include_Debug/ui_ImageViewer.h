@@ -86,7 +86,7 @@ public:
     {
         if (ImageViewerClass->objectName().isEmpty())
             ImageViewerClass->setObjectName("ImageViewerClass");
-        ImageViewerClass->resize(818, 646);
+        ImageViewerClass->resize(1110, 758);
         actionOpen = new QAction(ImageViewerClass);
         actionOpen->setObjectName("actionOpen");
         actionSave_as = new QAction(ImageViewerClass);
@@ -108,7 +108,7 @@ public:
         scrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName("scrollAreaWidgetContents");
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 488, 566));
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 756, 678));
         scrollArea->setWidget(scrollAreaWidgetContents);
 
         verticalLayout->addWidget(scrollArea);
@@ -116,7 +116,7 @@ public:
         ImageViewerClass->setCentralWidget(centralWidget);
         menuBar = new QMenuBar(ImageViewerClass);
         menuBar->setObjectName("menuBar");
-        menuBar->setGeometry(QRect(0, 0, 818, 21));
+        menuBar->setGeometry(QRect(0, 0, 1110, 21));
         menuFile = new QMenu(menuBar);
         menuFile->setObjectName("menuFile");
         menuImage = new QMenu(menuBar);
@@ -285,7 +285,7 @@ public:
         pushButtonSphere = new QPushButton(groupBox_2);
         pushButtonSphere->setObjectName("pushButtonSphere");
 
-        gridLayout_4->addWidget(pushButtonSphere, 10, 0, 1, 1);
+        gridLayout_4->addWidget(pushButtonSphere, 9, 2, 1, 1);
 
 
         gridLayout_2->addWidget(groupBox_2, 1, 0, 1, 1);
@@ -351,7 +351,7 @@ public:
         pushButtonReflectX->setText(QCoreApplication::translate("ImageViewerClass", "Reflect X", nullptr));
         pushButtonCube->setText(QCoreApplication::translate("ImageViewerClass", "Cube", nullptr));
         pushButtonReflectY->setText(QCoreApplication::translate("ImageViewerClass", "Reflect Y", nullptr));
-        pushButtonSphere->setText(QCoreApplication::translate("ImageViewerClass", "PushButton", nullptr));
+        pushButtonSphere->setText(QCoreApplication::translate("ImageViewerClass", "Sphere", nullptr));
     } // retranslateUi
 
 };

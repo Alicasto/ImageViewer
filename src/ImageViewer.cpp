@@ -434,6 +434,8 @@ void ImageViewer::on_actionClear_triggered()
 	vW->getPolygonPoints().clear();
 	vW->setDrawLineActivated(false);
 	vW->hasObject = false;
+	vW->currentCube.points.clear();
+	vW->currentCube.triangles.clear();
 	vW->update();
 }
 void ImageViewer::on_actionExit_triggered()
