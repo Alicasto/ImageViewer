@@ -92,7 +92,9 @@ public:
 	void setCube3D(double k);
 	void saveCurrentCubeToVTK(const QString& filename);
 	bool loadCubeFromVTK(const QString& filename);
-	
+	bool saveCurrentModelToVTK(const QString& filename);
+	bool loadModelFromVTK(const QString& filename);
+
 	Cube currentCube;
 	bool hasCube3D = false;
 

@@ -375,6 +375,18 @@ void ImageViewer::on_actionOpen_triggered()
 	QFileInfo fi(fileName);
 	settings.setValue("folder_img_load_path", fi.absoluteDir().absolutePath());
 
+	if (fi.suffix().toLower() == "vtk") {
+		if (!vW->loadModelFromVTK(fileName)) {
+			msgBox.setText("Unable to open file");
+			msgBox.setIcon(QMessageBox::Warning);
+		}
+		else {
+			msgBox.setText(QString("VTK nodel %1 loaded").arg(fileName));
+			msgBox.setIcon(QMessageBox::Information);
+		}
+		msgBox.exec();
+		return;
+	}
 	if (!openImage(fileName)) {
 		msgBox.setText("Unable to open image.");
 		msgBox.setIcon(QMessageBox::Warning);
@@ -392,10 +404,14 @@ void ImageViewer::on_actionSave_as_triggered()
 		settings.setValue("folder_img_save_path", fi.absoluteDir().absolutePath());
 
 		if (fi.suffix().toLower() == "vtk") {
-			vW->saveCurrentCubeToVTK(fileName);
-
-			msgBox.setText(QString("VTK file %1 saved.").arg(fileName));
-			msgBox.setIcon(QMessageBox::Information);
+			if (!vW->saveCurrentModelToVTK(fileName)) {
+				msgBox.setText("No 3D model to save");
+				msgBox.setIcon(QMessageBox::Warning);
+			}
+			else {
+				msgBox.setText(QString("VTK model %1 saved").arg(fileName));
+				msgBox.setIcon(QMessageBox::Information);
+			}
 		}
 		else {
 			if (!saveImage(fileName)) {

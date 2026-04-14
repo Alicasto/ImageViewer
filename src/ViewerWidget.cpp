@@ -863,15 +863,35 @@ bool ViewerWidget::loadCubeFromVTK(const QString& filename)
 
 }
 
+bool ViewerWidget::saveCurrentModelToVTK(const QString& filename)
+{
+	if (!hasCube3D) {
+		return false;
+	}
+	saveCubeToVTK(currentCube, filename);
+	return true;
+}
+
+bool ViewerWidget::loadModelFromVTK(const QString& filename)
+{
+	return loadCubeFromVTK(filename);
+}
+
 void ViewerWidget::creatSphereUV(double r, int vert, int horiz, Cube& sphere)
 {
 	sphere.points.clear();
 	sphere.triangles.clear();
 
+	if (r <= 0.0 || vert < 3 || horiz < 1) {
+		return;
+	}
+	const int meridians = vert;
+	const int parallels = horiz;
+
 	sphere.points.push_back({ 0, r, 0 });
 	
-	for (int i = 0; i < horiz; i++) {
-		double theta = M_PI * i / horiz;
+	for (int i = 1; i <= parallels; ++i) {
+		double theta = M_PI * i / (parallels+1);
 
 		for (int j = 0; j < vert; j++) {
 			double phi = 2.0 * M_PI * j / vert;
