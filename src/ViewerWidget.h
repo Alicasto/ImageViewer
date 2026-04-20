@@ -104,7 +104,7 @@ public:
 	double dot3D(const Point3D& a, const Point3D& b);
 	Point3D vect(const Point3D& a, const Point3D& b);
 	void creatCameraBasis(double theta, double phi, Point3D& n, Point3D& u, Point3D& v);
-	
+	Point3D toCameraCoords(const Point3D& p, const Point3D& n, const Point3D& u, const Point3D& v);
 
 public slots:
 	void paintEvent(QPaintEvent* event) Q_DECL_OVERRIDE;

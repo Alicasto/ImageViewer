@@ -983,6 +983,15 @@ void ViewerWidget::creatCameraBasis(double theta, double phi, Point3D& n, Point3
 	v = vect(u, n);
 }
 
+ViewerWidget::Point3D ViewerWidget::toCameraCoords(const Point3D& p, const Point3D& n, const Point3D& u, const Point3D& v)
+{
+	Point3D res;
+	res.x = dot3D(p, v);
+	res.y = dot3D(p, u);
+	res.z = dot3D(p, n);
+	return res;
+}
+
 
 //Slots
 void ViewerWidget::paintEvent(QPaintEvent* event)
