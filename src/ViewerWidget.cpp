@@ -962,11 +962,25 @@ double ViewerWidget::dot3D(const Point3D& a, const Point3D& b)//scalar
 
 ViewerWidget::Point3D ViewerWidget::vect(const Point3D& a, const Point3D& b)
 {
-	return { a.y * b.z + a.z * b.y,
-		a.z * b.x - a.x * b.z,
-		a.x * b.y - a.y * b.x };
-
+	Point3D k;
+	k.x = a.y * b.z + a.z * b.y;
+	k.y = a.z* b.x - a.x * b.z;
+	k.z = a.x* b.y - a.y * b.x;
+	return k;
 	
+}
+
+void ViewerWidget::creatCameraBasis(double theta, double phi, Point3D& n, Point3D& u, Point3D& v)
+{
+	n.x = sin(theta) * sin(phi);
+	n.y = sin(theta) * cos(phi);
+	n.z = sin(theta);
+
+	u.x = cos(theta) * sin(phi);
+	u.y = cos(theta) * cos(phi);
+	u.z = -sin(theta);
+
+	v = vect(u, n);
 }
 
 
