@@ -963,9 +963,9 @@ double ViewerWidget::dot3D(const Point3D& a, const Point3D& b)//scalar
 ViewerWidget::Point3D ViewerWidget::vect(const Point3D& a, const Point3D& b)
 {
 	Point3D k;
-	k.x = a.y * b.z + a.z * b.y;
-	k.y = a.z* b.x - a.x * b.z;
-	k.z = a.x* b.y - a.y * b.x;
+	k.x = a.y * b.z - a.z * b.y;
+	k.y = a.z * b.x - a.x * b.z;
+	k.z = a.x * b.y - a.y * b.x;
 	return k;
 	
 }
@@ -974,7 +974,7 @@ void ViewerWidget::creatCameraBasis(double theta, double phi, Point3D& n, Point3
 {
 	n.x = sin(theta) * sin(phi);
 	n.y = sin(theta) * cos(phi);
-	n.z = sin(theta);
+	n.z = cos(theta);
 
 	u.x = cos(theta) * sin(phi);
 	u.y = cos(theta) * cos(phi);
@@ -990,6 +990,66 @@ ViewerWidget::Point3D ViewerWidget::toCameraCoords(const Point3D& p, const Point
 	res.y = dot3D(p, u);
 	res.z = dot3D(p, n);
 	return res;
+}
+
+void ViewerWidget::setZenit(double angle)
+{
+	zenit = angle;
+	if (hasCube3D) {
+		drawCube(currentCube, Qt::black);
+	}
+}
+
+void ViewerWidget::setAzimut(double angle)
+{
+	azimut = angle;
+	if (hasCube3D) {
+		drawCube(currentCube, Qt::black);
+	}
+}
+void ViewerWidget::setProjectionDistance(double d)
+{
+	pDist = d;
+	if (hasCube3D) {
+		drawCube(currentCube, Qt::black);
+	}
+}
+
+void ViewerWidget::setPerspective(bool state)
+{
+	perspective = state;
+	if (hasCube3D) {
+		drawCube(currentCube, Qt::black);
+	}
+}
+
+void ViewerWidget::setFill3D(bool state)
+{
+	fill3D = state;
+	if (hasCube3D) {
+		drawCube(currentCube, Qt::black);
+	}
+}
+
+
+
+QPoint ViewerWidget::projectPerspective(const Point3D& p)
+{
+	int centerX = width() / 2;
+	int centerY = height() / 2;
+
+	double z = p.z;
+	if (fabs(z) < 0.0001) {
+		z = 0.0001;
+	}
+
+	double xProj = pDist * p.x / z;
+	double yProj = pDist * p.y / z;
+
+	int x = static_cast<int>(round(centerX + xProj));
+	int y = static_cast<int>(round(centerY + yProj));
+	
+	return QPoint(x, y);
 }
 
 

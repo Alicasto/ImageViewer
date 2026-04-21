@@ -101,10 +101,24 @@ public:
 	void creatSphereUV(double r, int vert, int horiz, Cube& sphere);
 	void setSphere3D(double r, int horiz, int vert);
 
+	double zenit = 45.0;
+	double azimut = 45.0;
+	double pDist = 300.0;
+	bool perspective = false;
+	bool fill3D = false;
+
 	double dot3D(const Point3D& a, const Point3D& b);
 	Point3D vect(const Point3D& a, const Point3D& b);
 	void creatCameraBasis(double theta, double phi, Point3D& n, Point3D& u, Point3D& v);
 	Point3D toCameraCoords(const Point3D& p, const Point3D& n, const Point3D& u, const Point3D& v);
+	
+	void setZenit(double angle);
+	void setAzimut(double angle);
+	void setProjectionDistance(double d);
+	void setPerspective(bool state);
+	void setFill3D(bool state);
+	
+	QPoint projectPerspective(const Point3D& p);
 
 public slots:
 	void paintEvent(QPaintEvent* event) Q_DECL_OVERRIDE;
