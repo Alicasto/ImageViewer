@@ -119,7 +119,7 @@ public:
 	void setFill3D(bool state);
 	
 	QPoint projectPerspective(const Point3D& p);
-
+	QPoint projectParallel(const Point3D& p);
 public slots:
 	void paintEvent(QPaintEvent* event) Q_DECL_OVERRIDE;
 };

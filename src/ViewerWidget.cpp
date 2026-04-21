@@ -1052,6 +1052,19 @@ QPoint ViewerWidget::projectPerspective(const Point3D& p)
 	return QPoint(x, y);
 }
 
+QPoint ViewerWidget::projectParallel(const Point3D& p)
+{
+	int centerX = width() / 2;
+	int centerY = height() / 2;
+
+	double scale = 100.0;
+
+	int x = static_cast<int>(round(centerX + p.x * scale));
+	int y = static_cast<int>(round(centerY - p.y * scale));
+	
+	return QPoint(x, y);
+}
+
 
 //Slots
 void ViewerWidget::paintEvent(QPaintEvent* event)
