@@ -120,6 +120,26 @@ public:
 	
 	QPoint projectPerspective(const Point3D& p);
 	QPoint projectParallel(const Point3D& p);
+
+	struct LightSource {
+		Point3D position;
+		QColor color;
+	};
+	
+	struct Material {
+		double ka, kd, ks;
+		int n;
+	};
+
+	LightSource light;
+	Material material;
+	QColor ambientLightColor;
+
+	bool useType = false;
+	
+	Point3D calculateNormal(Point3D a, Point3D b, Point3D c);
+	QColor calculatePhongColor(Point3D P, Point3D N, Point3D V);
+
 public slots:
 	void paintEvent(QPaintEvent* event) Q_DECL_OVERRIDE;
 };
