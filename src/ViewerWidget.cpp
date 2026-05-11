@@ -1065,6 +1065,22 @@ QPoint ViewerWidget::projectParallel(const Point3D& p)
 	return QPoint(x, y);
 }
 
+ViewerWidget::Point3D ViewerWidget::calculateNormal(Point3D a, Point3D b, Point3D c)
+{
+	Point3D v1 = { b.x - a.x, b.y - a.y, b.z - a.z };
+	Point3D v2 = { c.x - a.x, c.y - a.y, c.z - a.z };
+	Point3D n = vect(v1, v2);
+
+	double length = sqrt(n.x * n.x + n.y * n.y + n.z * n.z);
+	
+	if (length > 0) {
+		n.x /= length;
+		n.y /= length;
+		n.z /= length;
+	}
+	return n;
+}
+
 
 //Slots
 void ViewerWidget::paintEvent(QPaintEvent* event)
