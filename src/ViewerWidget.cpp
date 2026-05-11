@@ -1081,6 +1081,49 @@ ViewerWidget::Point3D ViewerWidget::calculateNormal(Point3D a, Point3D b, Point3
 	return n;
 }
 
+QColor ViewerWidget::calculatePhongColor(Point3D P, Point3D N, Point3D V)
+{
+	//vektor svetla = pozicia svetla - bod na objekte
+	Point3D L = { light.position.x - P.x, light.position.y - P.y, light.position.z - P.z };
+	double dist = sqrt(L.x * L.x + L.y * L.y + L.z * L.z);
+	if (dist > 0) { 
+		L.x /= dist; 
+		L.y /= dist; 
+		L.z /= dist; 
+	}
+	
+	//svetlo fona(background)
+	double Ia_r = material.ka * ambientLightColor.red();
+	double Ia_g = material.ka * ambientLightColor.green();
+	double Ia_b = material.ka * ambientLightColor.blue();
+	
+	//diffuse matove svetlo -> skalar normaly N a vektora svetla L
+	double cosTheta = std::max(0.0, dot3D(N, L));
+	double Id_r = material.kd * light.color.red() * cosTheta;
+	double Id_g = material.kd * light.color.green() * cosTheta;
+	double Id_b = material.kd * light.color.blue() * cosTheta;
+	
+	// blesk otazenny luc R = 2 * (N * L) * N - L
+	Point3D R = {
+		2 * cosTheta * N.x - L.x,
+		2 * cosTheta * N.y - L.y,
+		2 * cosTheta * N.z - L.z
+	};
+
+	//skalar otrazenneho luca R a vektora pohladu V
+	double cosAlpha = std::max(0.0, dot3D(R, V));
+	double Is_r = material.ks * light.color.red() * pow(cosAlpha, material.n);
+	double Is_g = material.ks * light.color.green() * pow(cosAlpha, material.n);
+	double Is_b = material.ks * light.color.blue() * pow(cosAlpha, material.n);
+
+	//konecne svetlo
+	int r = std::clamp((int)(Ia_r + Id_r + Is_r), 0, 255);
+	int g = std::clamp((int)(Ia_g + Id_g + Is_g), 0, 255);
+	int b = std::clamp((int)(Ia_b + Id_b + Is_b), 0, 255);
+
+	return QColor(r, g, b);
+}
+
 
 //Slots
 void ViewerWidget::paintEvent(QPaintEvent* event)
