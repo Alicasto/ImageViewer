@@ -722,7 +722,7 @@ void ViewerWidget::drawCoonsBSpline(const QVector<QPoint>& pts, QColor color)
 
 void ViewerWidget::creatCube(double k, Cube& cube)
 {
-
+	double h = k / 2.0;
 	cube.points = {
 		{0,0,0},//0 down
 		{0,0,k},//1 d
@@ -751,22 +751,76 @@ void ViewerWidget::drawCube(const Cube& cube, QColor color)
 	}
 	clear();
 
-	QVector<QPoint> point2D;
+	Point3D n, u, v;
+	creatCameraBasis(zenit, azimut, n, u, v);
 
-	int centX = width() / 2;
+	QVector<QPoint> point2D;
+	QVector<Point3D> camPoints;
+
+	/*int centX = width() / 2;
 	int centY = height() / 2;
 
-	double d = 0.2;
+	double d = 0.2;*/
 
 	for (const Point3D& p : cube.points) {
-		int x = static_cast<int>(round(centX + p.x + d * p.z));
+		Point3D pCam = toCameraCoords(p, n, u, v);
+		camPoints.push_back(pCam);
+
+		if (perspective) {
+			point2D.push_back(projectPerspective(pCam));
+		}
+		else {
+			point2D.push_back(projectParallel(pCam));
+		}
+		/*int x = static_cast<int>(round(centX + p.x + d * p.z));
 		int y = static_cast<int>(round(centY - p.y - d * p.z));
 
-		point2D.push_back(QPoint(x, y));
+		point2D.push_back(QPoint(x, y));*/
+	}
+
+	struct IndexedTriangle {
+		int id;
+		double z;
+	};
+	QVector<IndexedTriangle> sorted;
+	for (int i = 0; i < cube.triangles.size(); ++i) {
+		double avgZ = (camPoints[cube.triangles[i].a].z + camPoints[cube.triangles[i].b].z + camPoints[cube.triangles[i].c].z) / 3.0;
+		sorted.push_back({ i, avgZ });
+	}
+	sort(sorted.begin(), sorted.end(), [](const IndexedTriangle& a, const IndexedTriangle& b) {
+		return a.z > b.z; 
+	});
+	for (const auto& item : sorted) {
+		const Triangle& t = cube.triangles[item.id];
+
+		if (fill3D) {
+			Point3D viewVec = { 0, 0, -1 };
+			if (useType) { // Gouraud
+				
+				Point3D nG = calculateNormal(camPoints[t.a], camPoints[t.b], camPoints[t.c]);
+				QColor cA = calculatePhongColor(camPoints[t.a], nG, viewVec);
+				QColor cB = calculatePhongColor(camPoints[t.b], nG, viewVec);
+				QColor cC = calculatePhongColor(camPoints[t.c], nG, viewVec);
+				fillTriangle(point2D[t.a], point2D[t.b], point2D[t.c], cA, cB, cC, true);
+			}
+			else { // Flat
+				Point3D normal = calculateNormal(camPoints[t.a], camPoints[t.b], camPoints[t.c]);
+				Point3D center = { (camPoints[t.a].x + camPoints[t.b].x + camPoints[t.c].x) / 3.0,
+								   (camPoints[t.a].y + camPoints[t.b].y + camPoints[t.c].y) / 3.0,
+								   (camPoints[t.a].z + camPoints[t.b].z + camPoints[t.c].z) / 3.0 };
+				QColor flatCol = calculatePhongColor(center, normal, viewVec);
+				fillTriangle(point2D[t.a], point2D[t.b], point2D[t.c], flatCol, flatCol, flatCol, false);
+			}
+		}
+		else {
+			drawLineBresenham(point2D[t.a], point2D[t.b], color);
+			drawLineBresenham(point2D[t.b], point2D[t.c], color);
+			drawLineBresenham(point2D[t.c], point2D[t.a], color);
+		}
 	}
 
 	//QColor diagonal = Qt::lightGray;
-	QColor edge = Qt::black;
+	/*QColor edge = Qt::black;
 	
 	for (const Triangle& t : cube.triangles) {
 		QPoint A = point2D[t.a];
@@ -776,7 +830,7 @@ void ViewerWidget::drawCube(const Cube& cube, QColor color)
 		drawLineBresenham(A, B, edge);
 		drawLineBresenham(B, C, edge);
 		drawLineBresenham(C, A, edge);
-	}
+	}*/
 	update();
 }
 
@@ -972,23 +1026,30 @@ ViewerWidget::Point3D ViewerWidget::vect(const Point3D& a, const Point3D& b)
 
 void ViewerWidget::creatCameraBasis(double theta, double phi, Point3D& n, Point3D& u, Point3D& v)
 {
-	n.x = sin(theta) * sin(phi);
-	n.y = sin(theta) * cos(phi);
+	n.x = sin(theta) * cos(phi);
+	n.y = sin(theta) * sin(phi);
 	n.z = cos(theta);
 
-	u.x = cos(theta) * sin(phi);
-	u.y = cos(theta) * cos(phi);
-	u.z = -sin(theta);
+	//u.x = cos(theta) * sin(phi);
+	//u.y = cos(theta) * cos(phi);
+	//u.z = -sin(theta);
+	u.x = -sin(phi);
+	u.y = cos(phi);
+	u.z = 0;
 
-	v = vect(u, n);
+	v = vect(n, u);
 }
 
 ViewerWidget::Point3D ViewerWidget::toCameraCoords(const Point3D& p, const Point3D& n, const Point3D& u, const Point3D& v)
 {
 	Point3D res;
-	res.x = dot3D(p, v);
-	res.y = dot3D(p, u);
-	res.z = dot3D(p, n);
+	double tx = dot3D(p, u);
+	double ty = dot3D(p, v);
+	double tz = dot3D(p, n);
+
+	res.x = tx;
+	res.y = ty;
+	res.z = tz + pDist;
 	return res;
 }
 
@@ -1038,18 +1099,15 @@ QPoint ViewerWidget::projectPerspective(const Point3D& p)
 	int centerX = width() / 2;
 	int centerY = height() / 2;
 
-	double z = p.z;
-	if (fabs(z) < 0.0001) {
-		z = 0.0001;
+	if (p.z < 10.0) {
+		return QPoint(-10000, -10000);
 	}
 
-	double xProj = pDist * p.x / z;
-	double yProj = pDist * p.y / z;
+	double xProj = (pDist * p.x) / p.z;
+	double yProj = (pDist * p.y) / p.z;
 
-	int x = static_cast<int>(round(centerX + xProj));
-	int y = static_cast<int>(round(centerY + yProj));
-	
-	return QPoint(x, y);
+	return QPoint(static_cast<int>(round(centerX + xProj)),
+		static_cast<int>(round(centerY - yProj)));
 }
 
 QPoint ViewerWidget::projectParallel(const Point3D& p)
@@ -1057,7 +1115,7 @@ QPoint ViewerWidget::projectParallel(const Point3D& p)
 	int centerX = width() / 2;
 	int centerY = height() / 2;
 
-	double scale = 100.0;
+	double scale = 1.5;
 
 	int x = static_cast<int>(round(centerX + p.x * scale));
 	int y = static_cast<int>(round(centerY - p.y * scale));
@@ -1083,6 +1141,7 @@ ViewerWidget::Point3D ViewerWidget::calculateNormal(Point3D a, Point3D b, Point3
 
 QColor ViewerWidget::calculatePhongColor(Point3D P, Point3D N, Point3D V)
 {
+	
 	//vektor svetla = pozicia svetla - bod na objekte
 	Point3D L = { light.position.x - P.x, light.position.y - P.y, light.position.z - P.z };
 	double dist = sqrt(L.x * L.x + L.y * L.y + L.z * L.z);

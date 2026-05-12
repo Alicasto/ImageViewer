@@ -103,7 +103,7 @@ public:
 
 	double zenit = 45.0;
 	double azimut = 45.0;
-	double pDist = 300.0;
+	double pDist = 800.0;
 	bool perspective = false;
 	bool fill3D = false;
 

@@ -26,10 +26,126 @@
          <x>0</x>
          <y>0</y>
          <width>756</width>
-         <height>678</height>
+         <height>433</height>
         </rect>
        </property>
       </widget>
+     </widget>
+    </item>
+    <item>
+     <widget class="QGroupBox" name="groupBox_5">
+      <property name="title">
+       <string/>
+      </property>
+      <layout class="QGridLayout" name="gridLayout_6">
+       <item row="0" column="1">
+        <widget class="QGroupBox" name="groupBox_3">
+         <property name="title">
+          <string>Shading and Light</string>
+         </property>
+         <layout class="QGridLayout" name="gridLayout_3">
+          <item row="5" column="1">
+           <widget class="QDoubleSpinBox" name="SpinBoxZ">
+            <property name="minimum">
+             <double>-5000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>5000.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QLabel" name="label_2">
+            <property name="text">
+             <string>Y</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QDoubleSpinBox" name="SpinBoxX">
+            <property name="minimum">
+             <double>-5000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>5000.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QLabel" name="label_3">
+            <property name="text">
+             <string>Z</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QLabel" name="label">
+            <property name="text">
+             <string>X</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QDoubleSpinBox" name="SpinBoxY">
+            <property name="minimum">
+             <double>-5000.000000000000000</double>
+            </property>
+            <property name="maximum">
+             <double>5000.000000000000000</double>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QLabel" name="label_4">
+            <property name="text">
+             <string>Coordinates of Light</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="0" rowspan="2">
+           <widget class="QComboBox" name="comboBox">
+            <item>
+             <property name="text">
+              <string>Wireframe</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Flat</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Gouraud</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="QPushButton" name="pushButtonLight">
+            <property name="text">
+             <string>Set Light Color</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item row="0" column="0">
+        <widget class="QGroupBox" name="groupBox_6">
+         <property name="title">
+          <string>Projection</string>
+         </property>
+        </widget>
+       </item>
+       <item row="0" column="2">
+        <widget class="QGroupBox" name="groupBox_7">
+         <property name="title">
+          <string>Material Properties</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </widget>
     </item>
    </layout>
@@ -79,16 +195,60 @@
    </attribute>
    <widget class="QWidget" name="dockWidgetContents">
     <layout class="QGridLayout" name="gridLayout_2">
-     <item row="0" column="0">
-      <widget class="QGroupBox" name="groupBox">
+     <item row="2" column="0">
+      <widget class="QGroupBox" name="groupBox_4">
        <property name="title">
-        <string>Color</string>
+        <string>Camera</string>
        </property>
-       <layout class="QGridLayout" name="gridLayout">
-        <item row="0" column="0">
-         <widget class="QPushButton" name="pushButtonSetColor">
+       <layout class="QGridLayout" name="gridLayout_5">
+        <item row="1" column="7">
+         <widget class="QSlider" name="verticalSliderDis">
+          <property name="maximum">
+           <number>800</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Orientation::Vertical</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="7">
+         <widget class="QLabel" name="label_7">
           <property name="text">
-           <string/>
+           <string>Distance</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="5">
+         <widget class="QSlider" name="verticalSliderAzimut">
+          <property name="maximum">
+           <number>360</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Orientation::Vertical</enum>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="5">
+         <widget class="QLabel" name="label_6">
+          <property name="text">
+           <string>Azimut</string>
+          </property>
+         </widget>
+        </item>
+        <item row="0" column="3">
+         <widget class="QLabel" name="label_5">
+          <property name="text">
+           <string>Zenit</string>
+          </property>
+         </widget>
+        </item>
+        <item row="1" column="3">
+         <widget class="QSlider" name="verticalSliderZenit">
+          <property name="maximum">
+           <number>180</number>
+          </property>
+          <property name="orientation">
+           <enum>Qt::Orientation::Vertical</enum>
           </property>
          </widget>
         </item>
@@ -111,27 +271,8 @@
           </property>
          </widget>
         </item>
-        <item row="8" column="1" colspan="2">
-         <widget class="QComboBox" name="comboBoxKrivky">
-          <property name="enabled">
-           <bool>true</bool>
-          </property>
-          <item>
-           <property name="text">
-            <string>Ferguson</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Bezier</string>
-           </property>
-          </item>
-          <item>
-           <property name="text">
-            <string>Coons B Spline</string>
-           </property>
-          </item>
-         </widget>
+        <item row="9" column="1">
+         <widget class="QLineEdit" name="lineEditC"/>
         </item>
         <item row="2" column="0">
          <widget class="QPushButton" name="buttonRotate">
@@ -143,6 +284,42 @@
           </property>
          </widget>
         </item>
+        <item row="1" column="0">
+         <widget class="QToolButton" name="toolButtonDrawLine">
+          <property name="text">
+           <string>Line</string>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+          <attribute name="buttonGroup">
+           <string notr="true">buttonGroup</string>
+          </attribute>
+         </widget>
+        </item>
+        <item row="8" column="0">
+         <widget class="QPushButton" name="pushButtonKrivka">
+          <property name="text">
+           <string>Curve</string>
+          </property>
+          <property name="checkable">
+           <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="0">
+         <widget class="QPushButton" name="pushButtonReflectX">
+          <property name="text">
+           <string>Reflect X</string>
+          </property>
+         </widget>
+        </item>
+        <item row="2" column="1">
+         <widget class="QSpinBox" name="spinBoxRotation"/>
+        </item>
+        <item row="5" column="1">
+         <widget class="QDoubleSpinBox" name="doubleSpinBoxShear"/>
+        </item>
         <item row="6" column="1">
          <widget class="QPushButton" name="pushButtonFill">
           <property name="text">
@@ -150,6 +327,33 @@
           </property>
           <property name="checkable">
            <bool>true</bool>
+          </property>
+         </widget>
+        </item>
+        <item row="9" column="0">
+         <widget class="QPushButton" name="pushButtonCube">
+          <property name="text">
+           <string>Cube</string>
+          </property>
+         </widget>
+        </item>
+        <item row="3" column="1">
+         <widget class="QDoubleSpinBox" name="doubleSpinBoxX">
+          <property name="minimum">
+           <double>0.010000000000000</double>
+          </property>
+          <property name="maximum">
+           <double>10.000000000000000</double>
+          </property>
+          <property name="value">
+           <double>1.000000000000000</double>
+          </property>
+         </widget>
+        </item>
+        <item row="4" column="1">
+         <widget class="QPushButton" name="pushButtonReflectY">
+          <property name="text">
+           <string>Reflect Y</string>
           </property>
          </widget>
         </item>
@@ -180,19 +384,6 @@
           </attribute>
          </widget>
         </item>
-        <item row="5" column="1">
-         <widget class="QDoubleSpinBox" name="doubleSpinBoxShear"/>
-        </item>
-        <item row="5" column="0">
-         <widget class="QPushButton" name="pushButtonShear">
-          <property name="text">
-           <string>Shear X</string>
-          </property>
-          <property name="checkable">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
         <item row="0" column="0" colspan="3">
          <widget class="QComboBox" name="comboBoxLineAlg">
           <item>
@@ -212,58 +403,6 @@
           </item>
          </widget>
         </item>
-        <item row="9" column="1">
-         <widget class="QLineEdit" name="lineEditC"/>
-        </item>
-        <item row="8" column="0">
-         <widget class="QPushButton" name="pushButtonKrivka">
-          <property name="text">
-           <string>Curve</string>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item row="2" column="1">
-         <widget class="QSpinBox" name="spinBoxRotation"/>
-        </item>
-        <item row="1" column="0">
-         <widget class="QToolButton" name="toolButtonDrawLine">
-          <property name="text">
-           <string>Line</string>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-          <attribute name="buttonGroup">
-           <string notr="true">buttonGroup</string>
-          </attribute>
-         </widget>
-        </item>
-        <item row="3" column="1">
-         <widget class="QDoubleSpinBox" name="doubleSpinBoxX">
-          <property name="minimum">
-           <double>0.010000000000000</double>
-          </property>
-          <property name="maximum">
-           <double>10.000000000000000</double>
-          </property>
-          <property name="value">
-           <double>1.000000000000000</double>
-          </property>
-         </widget>
-        </item>
-        <item row="3" column="0">
-         <widget class="QPushButton" name="pushButtonApplyScale">
-          <property name="text">
-           <string>Scale</string>
-          </property>
-          <property name="checkable">
-           <bool>false</bool>
-          </property>
-         </widget>
-        </item>
         <item row="3" column="2">
          <widget class="QDoubleSpinBox" name="doubleSpinBoxY">
           <property name="minimum">
@@ -277,37 +416,35 @@
           </property>
          </widget>
         </item>
-        <item row="4" column="0">
-         <widget class="QPushButton" name="pushButtonReflectX">
-          <property name="text">
-           <string>Reflect X</string>
+        <item row="8" column="1" colspan="2">
+         <widget class="QComboBox" name="comboBoxKrivky">
+          <property name="enabled">
+           <bool>true</bool>
           </property>
+          <item>
+           <property name="text">
+            <string>Ferguson</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Bezier</string>
+           </property>
+          </item>
+          <item>
+           <property name="text">
+            <string>Coons B Spline</string>
+           </property>
+          </item>
          </widget>
         </item>
-        <item row="11" column="0">
-         <spacer name="verticalSpacer">
-          <property name="orientation">
-           <enum>Qt::Orientation::Vertical</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>20</width>
-            <height>40</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item row="9" column="0">
-         <widget class="QPushButton" name="pushButtonCube">
+        <item row="3" column="0">
+         <widget class="QPushButton" name="pushButtonApplyScale">
           <property name="text">
-           <string>Cube</string>
+           <string>Scale</string>
           </property>
-         </widget>
-        </item>
-        <item row="4" column="1">
-         <widget class="QPushButton" name="pushButtonReflectY">
-          <property name="text">
-           <string>Reflect Y</string>
+          <property name="checkable">
+           <bool>false</bool>
           </property>
          </widget>
         </item>
@@ -315,6 +452,32 @@
          <widget class="QPushButton" name="pushButtonSphere">
           <property name="text">
            <string>Sphere</string>
+          </property>
+         </widget>
+        </item>
+        <item row="5" column="0">
+         <widget class="QPushButton" name="pushButtonShear">
+          <property name="text">
+           <string>Shear X</string>
+          </property>
+          <property name="checkable">
+           <bool>false</bool>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item row="0" column="0">
+      <widget class="QGroupBox" name="groupBox">
+       <property name="title">
+        <string>Color</string>
+       </property>
+       <layout class="QGridLayout" name="gridLayout">
+        <item row="0" column="0">
+         <widget class="QPushButton" name="pushButtonSetColor">
+          <property name="text">
+           <string/>
           </property>
          </widget>
         </item>
