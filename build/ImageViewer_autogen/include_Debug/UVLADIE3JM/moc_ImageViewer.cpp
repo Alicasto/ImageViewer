@@ -54,7 +54,35 @@ template <> constexpr inline auto ImageViewer::qt_create_metaobjectdata<qt_meta_
         "on_pushButtonReflectY_clicked",
         "on_pushButtonShear_clicked",
         "on_pushButtonCube_clicked",
-        "on_pushButtonSphere_clicked"
+        "on_pushButtonSphere_clicked",
+        "on_verticalSliderZenit_valueChanged",
+        "on_verticalSliderAzimut_valueChanged",
+        "on_verticalSliderDis_valueChanged",
+        "on_radioButtonOr_toggled",
+        "checked",
+        "on_radioButtonPer_toggled",
+        "on_comboBox_currentIndexChanged",
+        "index",
+        "on_SpinBoxX_valueChanged",
+        "val",
+        "on_SpinBoxY_valueChanged",
+        "on_SpinBoxZ_valueChanged",
+        "on_spinBoxLR_valueChanged",
+        "on_spinBoxLG_valueChanged",
+        "on_spinBoxLB_valueChanged",
+        "on_spinBoxAR_valueChanged",
+        "on_spinBoxAG_valueChanged",
+        "on_spinBoxAB_valueChanged",
+        "on_doubleSpinBoxR1_valueChanged",
+        "on_doubleSpinBoxG1_valueChanged",
+        "on_doubleSpinBoxB1_valueChanged",
+        "on_doubleSpinBoxR2_valueChanged",
+        "on_doubleSpinBoxG2_valueChanged",
+        "on_doubleSpinBoxB2_valueChanged",
+        "on_doubleSpinBoxR3_valueChanged",
+        "on_doubleSpinBoxG3_valueChanged",
+        "on_doubleSpinBoxB3_valueChanged",
+        "on_doubleSpinBoxDISTANCE_valueChanged"
     };
 
     QtMocHelpers::UintData qt_methods {
@@ -84,6 +112,106 @@ template <> constexpr inline auto ImageViewer::qt_create_metaobjectdata<qt_meta_
         QtMocHelpers::SlotData<void()>(13, 2, QMC::AccessPrivate, QMetaType::Void),
         // Slot 'on_pushButtonSphere_clicked'
         QtMocHelpers::SlotData<void()>(14, 2, QMC::AccessPrivate, QMetaType::Void),
+        // Slot 'on_verticalSliderZenit_valueChanged'
+        QtMocHelpers::SlotData<void(int)>(15, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Int, 8 },
+        }}),
+        // Slot 'on_verticalSliderAzimut_valueChanged'
+        QtMocHelpers::SlotData<void(int)>(16, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Int, 8 },
+        }}),
+        // Slot 'on_verticalSliderDis_valueChanged'
+        QtMocHelpers::SlotData<void(int)>(17, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Int, 8 },
+        }}),
+        // Slot 'on_radioButtonOr_toggled'
+        QtMocHelpers::SlotData<void(bool)>(18, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Bool, 19 },
+        }}),
+        // Slot 'on_radioButtonPer_toggled'
+        QtMocHelpers::SlotData<void(bool)>(20, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Bool, 19 },
+        }}),
+        // Slot 'on_comboBox_currentIndexChanged'
+        QtMocHelpers::SlotData<void(int)>(21, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Int, 22 },
+        }}),
+        // Slot 'on_SpinBoxX_valueChanged'
+        QtMocHelpers::SlotData<void(int)>(23, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Int, 24 },
+        }}),
+        // Slot 'on_SpinBoxY_valueChanged'
+        QtMocHelpers::SlotData<void(int)>(25, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Int, 24 },
+        }}),
+        // Slot 'on_SpinBoxZ_valueChanged'
+        QtMocHelpers::SlotData<void(int)>(26, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Int, 24 },
+        }}),
+        // Slot 'on_spinBoxLR_valueChanged'
+        QtMocHelpers::SlotData<void(int)>(27, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Int, 24 },
+        }}),
+        // Slot 'on_spinBoxLG_valueChanged'
+        QtMocHelpers::SlotData<void(int)>(28, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Int, 24 },
+        }}),
+        // Slot 'on_spinBoxLB_valueChanged'
+        QtMocHelpers::SlotData<void(int)>(29, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Int, 24 },
+        }}),
+        // Slot 'on_spinBoxAR_valueChanged'
+        QtMocHelpers::SlotData<void(int)>(30, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Int, 24 },
+        }}),
+        // Slot 'on_spinBoxAG_valueChanged'
+        QtMocHelpers::SlotData<void(int)>(31, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Int, 24 },
+        }}),
+        // Slot 'on_spinBoxAB_valueChanged'
+        QtMocHelpers::SlotData<void(int)>(32, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Int, 24 },
+        }}),
+        // Slot 'on_doubleSpinBoxR1_valueChanged'
+        QtMocHelpers::SlotData<void(double)>(33, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Double, 24 },
+        }}),
+        // Slot 'on_doubleSpinBoxG1_valueChanged'
+        QtMocHelpers::SlotData<void(double)>(34, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Double, 24 },
+        }}),
+        // Slot 'on_doubleSpinBoxB1_valueChanged'
+        QtMocHelpers::SlotData<void(double)>(35, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Double, 24 },
+        }}),
+        // Slot 'on_doubleSpinBoxR2_valueChanged'
+        QtMocHelpers::SlotData<void(double)>(36, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Double, 24 },
+        }}),
+        // Slot 'on_doubleSpinBoxG2_valueChanged'
+        QtMocHelpers::SlotData<void(double)>(37, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Double, 24 },
+        }}),
+        // Slot 'on_doubleSpinBoxB2_valueChanged'
+        QtMocHelpers::SlotData<void(double)>(38, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Double, 24 },
+        }}),
+        // Slot 'on_doubleSpinBoxR3_valueChanged'
+        QtMocHelpers::SlotData<void(double)>(39, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Double, 24 },
+        }}),
+        // Slot 'on_doubleSpinBoxG3_valueChanged'
+        QtMocHelpers::SlotData<void(double)>(40, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Double, 24 },
+        }}),
+        // Slot 'on_doubleSpinBoxB3_valueChanged'
+        QtMocHelpers::SlotData<void(double)>(41, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Double, 24 },
+        }}),
+        // Slot 'on_doubleSpinBoxDISTANCE_valueChanged'
+        QtMocHelpers::SlotData<void(double)>(42, 2, QMC::AccessPrivate, QMetaType::Void, {{
+            { QMetaType::Double, 24 },
+        }}),
     };
     QtMocHelpers::UintData qt_properties {
     };
@@ -119,6 +247,31 @@ void ImageViewer::qt_static_metacall(QObject *_o, QMetaObject::Call _c, int _id,
         case 9: _t->on_pushButtonShear_clicked(); break;
         case 10: _t->on_pushButtonCube_clicked(); break;
         case 11: _t->on_pushButtonSphere_clicked(); break;
+        case 12: _t->on_verticalSliderZenit_valueChanged((*reinterpret_cast<std::add_pointer_t<int>>(_a[1]))); break;
+        case 13: _t->on_verticalSliderAzimut_valueChanged((*reinterpret_cast<std::add_pointer_t<int>>(_a[1]))); break;
+        case 14: _t->on_verticalSliderDis_valueChanged((*reinterpret_cast<std::add_pointer_t<int>>(_a[1]))); break;
+        case 15: _t->on_radioButtonOr_toggled((*reinterpret_cast<std::add_pointer_t<bool>>(_a[1]))); break;
+        case 16: _t->on_radioButtonPer_toggled((*reinterpret_cast<std::add_pointer_t<bool>>(_a[1]))); break;
+        case 17: _t->on_comboBox_currentIndexChanged((*reinterpret_cast<std::add_pointer_t<int>>(_a[1]))); break;
+        case 18: _t->on_SpinBoxX_valueChanged((*reinterpret_cast<std::add_pointer_t<int>>(_a[1]))); break;
+        case 19: _t->on_SpinBoxY_valueChanged((*reinterpret_cast<std::add_pointer_t<int>>(_a[1]))); break;
+        case 20: _t->on_SpinBoxZ_valueChanged((*reinterpret_cast<std::add_pointer_t<int>>(_a[1]))); break;
+        case 21: _t->on_spinBoxLR_valueChanged((*reinterpret_cast<std::add_pointer_t<int>>(_a[1]))); break;
+        case 22: _t->on_spinBoxLG_valueChanged((*reinterpret_cast<std::add_pointer_t<int>>(_a[1]))); break;
+        case 23: _t->on_spinBoxLB_valueChanged((*reinterpret_cast<std::add_pointer_t<int>>(_a[1]))); break;
+        case 24: _t->on_spinBoxAR_valueChanged((*reinterpret_cast<std::add_pointer_t<int>>(_a[1]))); break;
+        case 25: _t->on_spinBoxAG_valueChanged((*reinterpret_cast<std::add_pointer_t<int>>(_a[1]))); break;
+        case 26: _t->on_spinBoxAB_valueChanged((*reinterpret_cast<std::add_pointer_t<int>>(_a[1]))); break;
+        case 27: _t->on_doubleSpinBoxR1_valueChanged((*reinterpret_cast<std::add_pointer_t<double>>(_a[1]))); break;
+        case 28: _t->on_doubleSpinBoxG1_valueChanged((*reinterpret_cast<std::add_pointer_t<double>>(_a[1]))); break;
+        case 29: _t->on_doubleSpinBoxB1_valueChanged((*reinterpret_cast<std::add_pointer_t<double>>(_a[1]))); break;
+        case 30: _t->on_doubleSpinBoxR2_valueChanged((*reinterpret_cast<std::add_pointer_t<double>>(_a[1]))); break;
+        case 31: _t->on_doubleSpinBoxG2_valueChanged((*reinterpret_cast<std::add_pointer_t<double>>(_a[1]))); break;
+        case 32: _t->on_doubleSpinBoxB2_valueChanged((*reinterpret_cast<std::add_pointer_t<double>>(_a[1]))); break;
+        case 33: _t->on_doubleSpinBoxR3_valueChanged((*reinterpret_cast<std::add_pointer_t<double>>(_a[1]))); break;
+        case 34: _t->on_doubleSpinBoxG3_valueChanged((*reinterpret_cast<std::add_pointer_t<double>>(_a[1]))); break;
+        case 35: _t->on_doubleSpinBoxB3_valueChanged((*reinterpret_cast<std::add_pointer_t<double>>(_a[1]))); break;
+        case 36: _t->on_doubleSpinBoxDISTANCE_valueChanged((*reinterpret_cast<std::add_pointer_t<double>>(_a[1]))); break;
         default: ;
         }
     }
@@ -143,14 +296,14 @@ int ImageViewer::qt_metacall(QMetaObject::Call _c, int _id, void **_a)
     if (_id < 0)
         return _id;
     if (_c == QMetaObject::InvokeMetaMethod) {
-        if (_id < 12)
+        if (_id < 37)
             qt_static_metacall(this, _c, _id, _a);
-        _id -= 12;
+        _id -= 37;
     }
     if (_c == QMetaObject::RegisterMethodArgumentMetaType) {
-        if (_id < 12)
+        if (_id < 37)
             *reinterpret_cast<QMetaType *>(_a[0]) = QMetaType();
-        _id -= 12;
+        _id -= 37;
     }
     return _id;
 }

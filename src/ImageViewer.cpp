@@ -533,3 +533,133 @@ void ImageViewer::on_pushButtonSphere_clicked()
 	}
 	vW->setSphere3D(radius, horiz, vert);
 }
+
+void ImageViewer::on_verticalSliderZenit_valueChanged(int value)
+{
+	vW->setZenit(value * M_PI / 180.0);
+
+}
+
+void ImageViewer::on_verticalSliderAzimut_valueChanged(int value)
+{
+	vW->setAzimut(value * M_PI / 180.0);
+}
+
+void ImageViewer::on_verticalSliderDis_valueChanged(int value)
+{
+	vW->setProjectionDistance(static_cast<double>(value));
+}
+
+void ImageViewer::on_radioButtonOr_toggled(bool checked)
+{
+	if (checked) {
+		vW->setPerspective(false);
+	}
+}
+
+void ImageViewer::on_radioButtonPer_toggled(bool checked)
+{
+	if (checked) {
+		vW->setPerspective(true);
+	}
+}
+
+void ImageViewer::on_comboBox_currentIndexChanged(int index)
+{
+	vW->setShadingMode(index);
+}
+
+void ImageViewer::on_SpinBoxX_valueChanged(int val)
+{
+	vW->updateLightPosition(val, ui->SpinBoxY->value(), ui->SpinBoxZ->value());
+}
+
+void ImageViewer::on_SpinBoxY_valueChanged(int val)
+{
+	vW->updateLightPosition(ui->SpinBoxX->value(), val, ui->SpinBoxZ->value());
+}
+
+void ImageViewer::on_SpinBoxZ_valueChanged(int val)
+{
+	vW->updateLightPosition(ui->SpinBoxX->value(), ui->SpinBoxY->value(), val);
+}
+
+void ImageViewer::on_spinBoxLR_valueChanged(int val)
+{
+	vW->updateLightColor(val, ui->spinBoxLG->value(), ui->spinBoxLB->value());
+}
+
+void ImageViewer::on_spinBoxLG_valueChanged(int val)
+{
+	vW->updateLightColor(ui->spinBoxLR->value(), val, ui->spinBoxLB->value());
+}
+
+void ImageViewer::on_spinBoxLB_valueChanged(int val)
+{
+	vW->updateLightColor(ui->spinBoxLR->value(), ui->spinBoxLG->value(), val);
+}
+
+void ImageViewer::on_spinBoxAR_valueChanged(int val)
+{
+	vW->updateAmbientLightColor(val, ui->spinBoxAG->value(), ui->spinBoxAB->value());
+}
+
+void ImageViewer::on_spinBoxAG_valueChanged(int val)
+{
+	vW->updateAmbientLightColor(ui->spinBoxAR->value(), val, ui->spinBoxAB->value());
+}
+
+void ImageViewer::on_spinBoxAB_valueChanged(int val)
+{
+	vW->updateAmbientLightColor(ui->spinBoxAR->value(), ui->spinBoxAG->value(), val);
+}
+
+void ImageViewer::on_doubleSpinBoxR1_valueChanged(double val)
+{
+	vW->updateMaterialDiffusion(val, ui->doubleSpinBoxG1->value(), ui->doubleSpinBoxB1->value());
+}
+
+void ImageViewer::on_doubleSpinBoxG1_valueChanged(double val)
+{
+	vW->updateMaterialDiffusion(ui->doubleSpinBoxR1->value(), val, ui->doubleSpinBoxB1->value());
+}
+
+void ImageViewer::on_doubleSpinBoxB1_valueChanged(double val)
+{
+	vW->updateMaterialDiffusion(ui->doubleSpinBoxR1->value(), ui->doubleSpinBoxG1->value(), val);
+}
+
+void ImageViewer::on_doubleSpinBoxR2_valueChanged(double val)
+{
+	vW->updateMaterialReflection(val, ui->doubleSpinBoxG2->value(), ui->doubleSpinBoxB2->value());
+}
+
+void ImageViewer::on_doubleSpinBoxG2_valueChanged(double val)
+{
+	vW->updateMaterialReflection(ui->doubleSpinBoxR2->value(), val, ui->doubleSpinBoxB2->value());
+}
+
+void ImageViewer::on_doubleSpinBoxB2_valueChanged(double val)
+{
+	vW->updateMaterialReflection(ui->doubleSpinBoxR2->value(), ui->doubleSpinBoxG2->value(), val);
+}
+
+void ImageViewer::on_doubleSpinBoxR3_valueChanged(double val)
+{
+	vW->updateMaterialAmbient(val, ui->doubleSpinBoxG3->value(), ui->doubleSpinBoxB3->value());
+}
+
+void ImageViewer::on_doubleSpinBoxG3_valueChanged(double val)
+{
+	vW->updateMaterialAmbient(ui->doubleSpinBoxR3->value(), val, ui->doubleSpinBoxB3->value());
+}
+
+void ImageViewer::on_doubleSpinBoxB3_valueChanged(double val)
+{
+	vW->updateMaterialAmbient(ui->doubleSpinBoxR3->value(), ui->doubleSpinBoxG3->value(), val);
+}
+
+void ImageViewer::on_doubleSpinBoxDISTANCE_valueChanged(double val)
+{
+	vW->updateShininess(val);
+}

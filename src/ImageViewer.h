@@ -55,4 +55,40 @@ private slots:
 
 	void on_pushButtonCube_clicked();
 	void on_pushButtonSphere_clicked();
+
+
+	void on_verticalSliderZenit_valueChanged(int value);
+	void on_verticalSliderAzimut_valueChanged(int value);
+	void on_verticalSliderDis_valueChanged(int value);
+
+	void on_radioButtonOr_toggled(bool checked);
+	void on_radioButtonPer_toggled(bool checked);
+
+	void on_comboBox_currentIndexChanged(int index);
+
+	void on_SpinBoxX_valueChanged(int val);
+	void on_SpinBoxY_valueChanged(int val);
+	void on_SpinBoxZ_valueChanged(int val);
+
+	void on_spinBoxLR_valueChanged(int val);
+	void on_spinBoxLG_valueChanged(int val);
+	void on_spinBoxLB_valueChanged(int val);
+
+	void on_spinBoxAR_valueChanged(int val);
+	void on_spinBoxAG_valueChanged(int val);
+	void on_spinBoxAB_valueChanged(int val);
+
+	void on_doubleSpinBoxR1_valueChanged(double val);
+	void on_doubleSpinBoxG1_valueChanged(double val);
+	void on_doubleSpinBoxB1_valueChanged(double val);
+
+	void on_doubleSpinBoxR2_valueChanged(double val);
+	void on_doubleSpinBoxG2_valueChanged(double val);
+	void on_doubleSpinBoxB2_valueChanged(double val);
+
+	void on_doubleSpinBoxR3_valueChanged(double val);
+	void on_doubleSpinBoxG3_valueChanged(double val);
+	void on_doubleSpinBoxB3_valueChanged(double val);
+
+	void on_doubleSpinBoxDISTANCE_valueChanged(double val);
 };

@@ -13,6 +13,14 @@ ViewerWidget::ViewerWidget(QSize imgSize, QWidget* parent)
 		resizeWidget(img->size());
 		setDataPtr();
 	}
+	light.position = { 0.0, 0.0, 1000.0 }; // Свет прямо перед объектом
+	light.lightR = 255.0;  light.lightG = 255.0;  light.lightB = 255.0;  // Белая лампа
+	light.ambientR = 60.0; light.ambientG = 60.0; light.ambientB = 60.0;
+
+	material.kd_R = 1.0;  material.kd_G = 0.0;  material.kd_B = 0.0;  // Диффузия: Красный
+	material.ks_R = 1.0;  material.ks_G = 1.0;  material.ks_B = 1.0;  // Блик: Белый
+	material.ka_R = 0.3;  material.ka_G = 0.3;  material.ka_B = 0.3;  // Эмбиент материала
+	material.n = 20.0;
 }
 ViewerWidget::~ViewerWidget()
 {
@@ -790,25 +798,41 @@ void ViewerWidget::drawCube(const Cube& cube, QColor color)
 	sort(sorted.begin(), sorted.end(), [](const IndexedTriangle& a, const IndexedTriangle& b) {
 		return a.z > b.z; 
 	});
+	//Point3D oldLightPos = light.position;
+	//light.position = toCameraCoords(oldLightPos, n, u, v);
+	Point3D oldLightPos = light.position;
+	light.position = { 0.0, 0.0, 500.0 };
+
 	for (const auto& item : sorted) {
 		const Triangle& t = cube.triangles[item.id];
 
 		if (fill3D) {
-			Point3D viewVec = { 0, 0, -1 };
-			if (useType) { // Gouraud
+			Point3D normal = calculateNormal(camPoints[t.a], camPoints[t.b], camPoints[t.c]);
+
+			if (shadingMode == 2) { // Gouraud
 				
-				Point3D nG = calculateNormal(camPoints[t.a], camPoints[t.b], camPoints[t.c]);
-				QColor cA = calculatePhongColor(camPoints[t.a], nG, viewVec);
-				QColor cB = calculatePhongColor(camPoints[t.b], nG, viewVec);
-				QColor cC = calculatePhongColor(camPoints[t.c], nG, viewVec);
+				Point3D vA = { -camPoints[t.a].x, -camPoints[t.a].y, -camPoints[t.a].z };
+				Point3D vB = { -camPoints[t.b].x, -camPoints[t.b].y, -camPoints[t.b].z };
+				Point3D vC = { -camPoints[t.c].x, -camPoints[t.c].y, -camPoints[t.c].z };
+
+				//Point3D nG = calculateNormal(camPoints[t.a], camPoints[t.b], camPoints[t.c]);
+				QColor cA = calculatePhongColor(camPoints[t.a], normal, vA);
+				QColor cB = calculatePhongColor(camPoints[t.b], normal, vB);
+				QColor cC = calculatePhongColor(camPoints[t.c], normal, vC);
+				
 				fillTriangle(point2D[t.a], point2D[t.b], point2D[t.c], cA, cB, cC, true);
 			}
 			else { // Flat
-				Point3D normal = calculateNormal(camPoints[t.a], camPoints[t.b], camPoints[t.c]);
-				Point3D center = { (camPoints[t.a].x + camPoints[t.b].x + camPoints[t.c].x) / 3.0,
-								   (camPoints[t.a].y + camPoints[t.b].y + camPoints[t.c].y) / 3.0,
-								   (camPoints[t.a].z + camPoints[t.b].z + camPoints[t.c].z) / 3.0 };
-				QColor flatCol = calculatePhongColor(center, normal, viewVec);
+				//Point3D normal = calculateNormal(camPoints[t.a], camPoints[t.b], camPoints[t.c]);
+				Point3D centerCam= { 
+					(camPoints[t.a].x + camPoints[t.b].x + camPoints[t.c].x) / 3.0,
+					(camPoints[t.a].y + camPoints[t.b].y + camPoints[t.c].y) / 3.0,
+					(camPoints[t.a].z + camPoints[t.b].z + camPoints[t.c].z) / 3.0 
+				};
+				Point3D viewVec = { -centerCam.x, -centerCam.y, -centerCam.z };
+
+				QColor flatCol = calculatePhongColor(centerCam, normal, viewVec);
+				
 				fillTriangle(point2D[t.a], point2D[t.b], point2D[t.c], flatCol, flatCol, flatCol, false);
 			}
 		}
@@ -831,6 +855,7 @@ void ViewerWidget::drawCube(const Cube& cube, QColor color)
 		drawLineBresenham(B, C, edge);
 		drawLineBresenham(C, A, edge);
 	}*/
+	light.position = oldLightPos;
 	update();
 }
 
@@ -860,7 +885,7 @@ void ViewerWidget::setCube3D(double k)
 {
 	creatCube(k, currentCube);
 	hasCube3D = true;
-	update();
+	drawCube(currentCube, Qt::black);
 }
 
 void ViewerWidget::saveCurrentCubeToVTK(const QString& filename)
@@ -1006,7 +1031,7 @@ void ViewerWidget::setSphere3D(double r, int horiz, int vert)
 {
 	creatSphereUV(r, vert, horiz, currentCube);
 	hasCube3D = true;
-	update();
+	drawCube(currentCube, Qt::black);
 }
 
 double ViewerWidget::dot3D(const Point3D& a, const Point3D& b)//scalar
@@ -1092,6 +1117,87 @@ void ViewerWidget::setFill3D(bool state)
 	}
 }
 
+void ViewerWidget::setShadingMode(int mode)
+{
+	shadingMode = mode;
+	if (mode == 0) {
+		fill3D = false;
+	}
+	else {
+		fill3D = true;
+	}
+	if (hasCube3D) {
+		drawCube(currentCube, Qt::black);
+	}
+}
+
+
+void ViewerWidget::updateLightPosition(double x, double y, double z)
+{
+	light.position = { x, y, z }; 
+	if (hasCube3D) {
+		drawCube(currentCube, Qt::black);
+	}
+}
+
+void ViewerWidget::updateLightColor(double r, double g, double b)
+{
+	light.lightR = r; 
+	light.lightG = g; 
+	light.lightB = b;
+	if (hasCube3D) {
+		drawCube(currentCube, Qt::black);
+	}
+}
+
+void ViewerWidget::updateAmbientLightColor(double r, double g, double b)
+{
+	light.ambientR = r; 
+	light.ambientG = g; 
+	light.ambientB = b;
+	if (hasCube3D) {
+		drawCube(currentCube, Qt::black);
+	}
+}
+
+void ViewerWidget::updateMaterialDiffusion(double r, double g, double b)
+{
+	material.kd_R = r; 
+	material.kd_G = g; 
+	material.kd_B = b;
+	if (hasCube3D) {
+		drawCube(currentCube, Qt::black);
+	}
+}
+
+void ViewerWidget::updateMaterialReflection(double r, double g, double b)
+{
+	material.ks_R = r; 
+	material.ks_G = g; 
+	material.ks_B = b;
+	if (hasCube3D) {
+		drawCube(currentCube, Qt::black);
+	}
+}
+
+void ViewerWidget::updateMaterialAmbient(double r, double g, double b)
+{
+	material.ka_R = r; 
+	material.ka_G = g; 
+	material.ka_B = b;
+	if (hasCube3D) {
+		drawCube(currentCube, Qt::black);
+	}
+}
+
+void ViewerWidget::updateShininess(double n)
+{
+	material.n = n; // коэффициент 'n' для резкости блика
+	if (hasCube3D) {
+		drawCube(currentCube, Qt::black);
+	}
+}
+
 
 
 QPoint ViewerWidget::projectPerspective(const Point3D& p)
@@ -1136,6 +1242,20 @@ ViewerWidget::Point3D ViewerWidget::calculateNormal(Point3D a, Point3D b, Point3
 		n.y /= length;
 		n.z /= length;
 	}
+	/*Point3D center = {
+		(a.x + b.x + c.x) / 3.0, 
+		(a.y + b.y + c.y) / 3.0, 
+		(a.z + b.z + c.z) / 3.0 
+	};
+	double viewDot = n.x * (-center.x) + n.y * (-center.y) + n.z * (-center.z);*/
+	Point3D center = { (a.x + b.x + c.x) / 3.0, (a.y + b.y + c.y) / 3.0, (a.z + b.z + c.z) / 3.0 };
+	Point3D toCamera = { -center.x, -center.y, -center.z };
+
+	if (dot3D(n, center) < 0.0) {
+		n.x = -n.x; 
+		n.y = -n.y; 
+		n.z = -n.z;
+	}
 	return n;
 }
 
@@ -1144,36 +1264,59 @@ QColor ViewerWidget::calculatePhongColor(Point3D P, Point3D N, Point3D V)
 	
 	//vektor svetla = pozicia svetla - bod na objekte
 	Point3D L = { light.position.x - P.x, light.position.y - P.y, light.position.z - P.z };
-	double dist = sqrt(L.x * L.x + L.y * L.y + L.z * L.z);
-	if (dist > 0) { 
-		L.x /= dist; 
-		L.y /= dist; 
-		L.z /= dist; 
+	double distL = sqrt(L.x * L.x + L.y * L.y + L.z * L.z);
+	if (distL > 0) { 
+		L.x /= distL; 
+		L.y /= distL; 
+		L.z /= distL; 
 	}
-	
+
+	double distV = sqrt(V.x * V.x + V.y * V.y + V.z * V.z);
+	if (distV > 0) { 
+		V.x /= distV; 
+		V.y /= distV; 
+		V.z /= distV; 
+	}
+
+	double distN = sqrt(N.x * N.x + N.y * N.y + N.z * N.z);
+	if (distN > 0) { 
+		N.x /= distN; 
+		N.y /= distN; 
+		N.z /= distN; 
+	}
+
+	double cosTheta = dot3D(N, L);
+	if (cosTheta < 0.0) cosTheta = 0.0;
+
 	//svetlo fona(background)
-	double Ia_r = material.ka * ambientLightColor.red();
-	double Ia_g = material.ka * ambientLightColor.green();
-	double Ia_b = material.ka * ambientLightColor.blue();
+	double Ia_r = material.ka_R * light.ambientR;
+	double Ia_g = material.ka_G * light.ambientG;
+	double Ia_b = material.ka_B * light.ambientB;
 	
 	//diffuse matove svetlo -> skalar normaly N a vektora svetla L
-	double cosTheta = std::max(0.0, dot3D(N, L));
-	double Id_r = material.kd * light.color.red() * cosTheta;
-	double Id_g = material.kd * light.color.green() * cosTheta;
-	double Id_b = material.kd * light.color.blue() * cosTheta;
+	double Id_r = material.kd_R * light.lightR * cosTheta;
+	double Id_g = material.kd_G * light.lightG * cosTheta;
+	double Id_b = material.kd_B * light.lightB * cosTheta;
 	
 	// blesk otazenny luc R = 2 * (N * L) * N - L
-	Point3D R = {
-		2 * cosTheta * N.x - L.x,
-		2 * cosTheta * N.y - L.y,
-		2 * cosTheta * N.z - L.z
-	};
+	double Is_r = 0.0, Is_g = 0.0, Is_b = 0.0;
+	if (cosTheta > 0.0) {
+		// R = 2 * (N dot L) * N - L
+		Point3D R = {
+			2.0 * cosTheta * N.x - L.x,
+			2.0 * cosTheta * N.y - L.y,
+			2.0 * cosTheta * N.z - L.z
+		};
 
-	//skalar otrazenneho luca R a vektora pohladu V
-	double cosAlpha = std::max(0.0, dot3D(R, V));
-	double Is_r = material.ks * light.color.red() * pow(cosAlpha, material.n);
-	double Is_g = material.ks * light.color.green() * pow(cosAlpha, material.n);
-	double Is_b = material.ks * light.color.blue() * pow(cosAlpha, material.n);
+		//skalar otrazenneho luca R a vektora pohladu V
+		double cosAlpha = dot3D(R, V);
+		if (cosAlpha < 0.0) cosAlpha = 0.0;
+
+		double specularFactor = pow(cosAlpha, material.n);
+		Is_r = material.ks_R * light.lightR * specularFactor;
+		Is_g = material.ks_G * light.lightG * specularFactor;
+		Is_b = material.ks_B * light.lightB * specularFactor;
+	}
 
 	//konecne svetlo
 	int r = std::clamp((int)(Ia_r + Id_r + Is_r), 0, 255);
@@ -1193,7 +1336,7 @@ void ViewerWidget::paintEvent(QPaintEvent* event)
 	QRect area = event->rect();
 	painter.drawImage(area, *img, area);
 
-	if (hasCube3D) {
+	/*if (hasCube3D) {
 		drawCube(currentCube, Qt::black);
-	}
+	}*/
 }

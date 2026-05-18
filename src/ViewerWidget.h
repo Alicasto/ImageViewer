@@ -85,6 +85,20 @@ public:
 		QVector<Triangle> triangles;
 	};
 
+	struct LightSettings {
+		Point3D position;
+		double lightR, lightG, lightB;
+		double ambientR, ambientG, ambientB;
+	};
+
+	struct Material {
+		double kd_R, kd_G, kd_B; // Diffusion
+		double ks_R, ks_G, ks_B; // Reflection
+		double ka_R, ka_G, ka_B; // Ambient
+		double n;
+	};
+
+
 	void creatCube(double k, Cube& cube);
 	void drawCube(const Cube& cube, QColor color);
 
@@ -101,11 +115,15 @@ public:
 	void creatSphereUV(double r, int vert, int horiz, Cube& sphere);
 	void setSphere3D(double r, int horiz, int vert);
 
-	double zenit = 45.0;
-	double azimut = 45.0;
+	double zenit = 1.0;
+	double azimut = 1.0;
 	double pDist = 800.0;
 	bool perspective = false;
 	bool fill3D = false;
+	int shadingMode = 0;
+
+	LightSettings light;
+	Material material;
 
 	double dot3D(const Point3D& a, const Point3D& b);
 	Point3D vect(const Point3D& a, const Point3D& b);
@@ -117,25 +135,18 @@ public:
 	void setProjectionDistance(double d);
 	void setPerspective(bool state);
 	void setFill3D(bool state);
+	void setShadingMode(int mode);
+
+	void updateLightPosition(double x, double y, double z);
+	void updateLightColor(double r, double g, double b);
+	void updateAmbientLightColor(double r, double g, double b);
+	void updateMaterialDiffusion(double r, double g, double b);
+	void updateMaterialReflection(double r, double g, double b);
+	void updateMaterialAmbient(double r, double g, double b);
+	void updateShininess(double n);
 	
 	QPoint projectPerspective(const Point3D& p);
 	QPoint projectParallel(const Point3D& p);
-
-	struct LightSource {
-		Point3D position;
-		QColor color;
-	};
-	
-	struct Material {
-		double ka, kd, ks;
-		int n;
-	};
-
-	LightSource light;
-	Material material;
-	QColor ambientLightColor;
-
-	bool useType = false;
 	
 	Point3D calculateNormal(Point3D a, Point3D b, Point3D c);
 	QColor calculatePhongColor(Point3D P, Point3D N, Point3D V);
